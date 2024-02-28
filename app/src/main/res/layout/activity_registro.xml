@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/editTextNick"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nick"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/editTextNombre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nombre"
+        android:layout_below="@id/editTextNick"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/editTextEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Correo electrónico"
+        android:inputType="textEmailAddress"
+        android:layout_below="@id/editTextNombre"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/editTextContraseña"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Contraseña"
+        android:inputType="textPassword"
+        android:layout_below="@id/editTextEmail"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnRegistrar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Registrar"
+        android:layout_below="@id/editTextContraseña"/>
+
+</RelativeLayout>
