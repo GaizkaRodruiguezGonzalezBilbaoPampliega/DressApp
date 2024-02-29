@@ -23,7 +23,7 @@ import androidx.fragment.app.Fragment;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 
-public class PostsFragment extends Fragment {
+public class CreatePublicacionFragment extends Fragment {
 
     ImageView userpic;
     private static final int GalleryPick = 1;
@@ -41,7 +41,7 @@ public class PostsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_createpublicacion, container, false);
 
         // Here we are initializing
         // the text and image View
