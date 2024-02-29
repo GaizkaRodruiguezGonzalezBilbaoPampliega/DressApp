@@ -2,6 +2,12 @@ pluginManagement {
     repositories {
         google()
         mavenCentral()
+
+        jcenter(){
+            content{
+                includeModule("com.theartofdev.edmodo","android-image-cropper")
+            }
+        }
         gradlePluginPortal()
     }
 }
@@ -10,6 +16,18 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
+        jcenter(){
+            content{
+                includeModule("com.theartofdev.edmodo","android-image-cropper")
+            }
+        }
+
+
+
+
+
+
     }
 }
 

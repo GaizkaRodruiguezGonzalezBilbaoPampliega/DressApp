@@ -34,15 +34,36 @@ android {
 }
 
 dependencies {
+    // Biblioteca para recortar imágenes
 
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("com.google.firebase:firebase-crashlytics:18.6.2")
-    implementation("com.google.firebase:firebase-auth:22.3.1")
-    implementation("com.google.firebase:firebase-database:20.3.0")
-    implementation("com.google.firebase:firebase-storage:20.3.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // Biblioteca de Material Design
+    implementation ("com.google.android.material:material:1.4.0")
+
+    // Biblioteca de compatibilidad de AndroidX
+    implementation ("androidx.appcompat:appcompat:1.6.1")
+
+    // Biblioteca de ConstraintLayout
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    // Firebase Crashlytics
+    implementation ("com.google.firebase:firebase-crashlytics:18.6.2")
+
+    // Firebase Authentication
+    implementation ("com.google.firebase:firebase-auth:22.3.1")
+
+    // Firebase Realtime Database
+    implementation ("com.google.firebase:firebase-database:20.3.0")
+
+    // Firebase Storage
+    implementation ("com.google.firebase:firebase-storage:20.3.0")
+
+    // Dependencias para pruebas unitarias
+    testImplementation ("junit:junit:4.13.2")
+    androidTestImplementation ("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+    implementation ("com.theartofdev.edmodo:android-image-cropper:2.8.0")
+
+    // Biblioteca para cargar imágenes en ImageView
+    implementation ("com.squareup.picasso:picasso:2.5.2")
 }
