@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.dressapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -23,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView textViewRegistrarse;
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextContraseña = findViewById(R.id.editTextContraseña);
@@ -49,13 +53,33 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            // Inicio de sesión exitoso, redirige a la actividad principal
-                            abrirActividadPrincipal(user.getUid());
+                            // Inicio de sesión exitoso, obtener ID del usuario y abrir actividad principal
+                            obtenerIDUsuario(user.getUid());
                         }
                     } else {
                         // Error en el inicio de sesión
                         Log.w(TAG, "signInWithEmail:failure", task.getException());
                         Toast.makeText(LoginActivity.this, "Error al iniciar sesión.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void obtenerIDUsuario(String userId) {
+        db.collection("usuarios").document(userId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            abrirActividadPrincipal(userId);
+                        } else {
+                            Log.d(TAG, "No such document");
+                            Toast.makeText(LoginActivity.this, "Usuario no encontrado en la base de datos.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
+                        Toast.makeText(LoginActivity.this, "Error al obtener información del usuario.",
                                 Toast.LENGTH_SHORT).show();
                     }
                 });

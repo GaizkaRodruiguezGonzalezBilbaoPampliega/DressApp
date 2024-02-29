@@ -13,8 +13,8 @@ public class Publicacion {
         // Constructor vacío requerido para Firebase
     }
 
-    public Publicacion(String id, Usuario usuario, String imagenUrl, String descripcion, List<String> listaArticulos) {
-        this.id = id;
+    public Publicacion( Usuario usuario, String imagenUrl, String descripcion, List<String> listaArticulos) {
+
         this.usuario = usuario;
         this.imagenUrl = imagenUrl;
         this.descripcion = descripcion;

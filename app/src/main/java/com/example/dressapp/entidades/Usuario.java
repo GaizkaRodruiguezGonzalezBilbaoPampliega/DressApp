@@ -17,8 +17,8 @@ public class Usuario {
         // Constructor vacío requerido para Firebase
     }
 
-    public Usuario(String id, String nick, String nombre, String email, String descripcion, List<String> seguidoresIds, List<String> seguidosIds, List<String> favoritosIds) {
-        this.id = id;
+    public Usuario( String nick, String nombre, String email, String descripcion, List<String> seguidoresIds, List<String> seguidosIds, List<String> favoritosIds) {
+
         this.nick = nick;
         this.nombre = nombre;
         this.email = email;
