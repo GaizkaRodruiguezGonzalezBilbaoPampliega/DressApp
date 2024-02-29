@@ -10,9 +10,9 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 
-import com.example.dressapp.CreateFragment;
-import com.example.dressapp.PostsFragment;
+import com.example.dressapp.CreatePublicacionFragment;
 import com.example.dressapp.ProfileFragment;
+import com.example.dressapp.PublicacionesFragment;
 import com.example.dressapp.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
             navigationView = findViewById(R.id.bottom_navigation);
-            getSupportFragmentManager().beginTransaction().replace(R.id.body_container, new PostsFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.body_container, new PublicacionesFragment()).commit();
             navigationView.setSelectedItemId(R.id.nav_posts);
 
             navigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
@@ -55,11 +55,11 @@ public class MainActivity extends AppCompatActivity {
                     Fragment fragment = null;
                     int itemid = item.getItemId();
                     if(itemid ==  R.id.nav_posts){
-                        fragment = new PostsFragment();
+                        fragment = new PublicacionesFragment();
                     }else if(itemid ==  R.id.nav_profile){
                         fragment = new ProfileFragment();
                     }else if(itemid ==  R.id.nav_create) {
-                        fragment = new CreateFragment();
+                        fragment = new CreatePublicacionFragment();
                     }
 
 
