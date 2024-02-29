@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "519684421350",
+    "firebase_url": "https://dressapp-1510a-default-rtdb.firebaseio.com",
+    "project_id": "dressapp-1510a",
+    "storage_bucket": "dressapp-1510a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:519684421350:android:cceb23af81f74b40336d27",
+        "android_client_info": {
+          "package_name": "com.example.dressapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlJoRKcTx-CvN_SSTF9TL09AIDY4e6UBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
