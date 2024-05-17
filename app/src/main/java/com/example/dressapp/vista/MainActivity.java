@@ -1,8 +1,10 @@
+// MainActivity.java
 package com.example.dressapp.vista;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,10 +12,8 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 
-import com.example.dressapp.CreatePublicacionFragment;
-import com.example.dressapp.ProfileFragment;
-import com.example.dressapp.PublicacionesFragment;
 import com.example.dressapp.R;
+import com.example.dressapp.adapters.ViewPagerAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,7 +21,9 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    BottomNavigationView navigationView;
+    private BottomNavigationView navigationView;
+    private ViewPager2 viewPager;
+    private ViewPagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +31,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         String userId = getIntent().getStringExtra("USER_ID");
         mAuth = FirebaseAuth.getInstance();
-
-
+        viewPager = findViewById(R.id.body_container);
+        pagerAdapter = new ViewPagerAdapter(this);
+        viewPager.setAdapter(pagerAdapter);
     }
 
     @Override
@@ -46,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
             navigationView = findViewById(R.id.bottom_navigation);
-            getSupportFragmentManager().beginTransaction().replace(R.id.body_container, new PublicacionesFragment()).commit();
             navigationView.setSelectedItemId(R.id.nav_posts);
 
             navigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
@@ -54,17 +56,21 @@ public class MainActivity extends AppCompatActivity {
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     Fragment fragment = null;
                     int itemid = item.getItemId();
-                    if(itemid ==  R.id.nav_posts){
-                        fragment = new PublicacionesFragment();
-                    }else if(itemid ==  R.id.nav_profile){
-                        fragment = new ProfileFragment();
-                    }else if(itemid ==  R.id.nav_create) {
-                        fragment = new CreatePublicacionFragment();
+                    if (itemid == R.id.nav_posts) {
+                        viewPager.setCurrentItem(0);
+                        return true;
+                    } else if (itemid == R.id.nav_profile) {
+                        viewPager.setCurrentItem(1);
+                        return true;
+                    } else if (itemid == R.id.nav_create) {
+                        viewPager.setCurrentItem(2);
+                        return true;
+                    } else if (itemid == R.id.nav_wardrobe) {
+                    viewPager.setCurrentItem(3);
+                    return true;
                     }
 
-
-                    getSupportFragmentManager().beginTransaction().replace(R.id.body_container, fragment).commit();
-                    return true;
+                    return false;
                 }
             });
         }

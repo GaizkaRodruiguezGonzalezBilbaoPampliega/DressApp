@@ -1,0 +1,66 @@
+<!-- res/layout/activity_crear_publicacion.xml -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CrearPublicacionActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:id="@+id/imageViewPublicacion"
+                android:layout_width="200dp"
+                android:layout_height="300dp"
+                android:scaleType="centerCrop"
+                android:background="@android:color/darker_gray"
+                android:layout_marginBottom="16dp"
+                android:onClick="seleccionarImagen" />
+
+            <EditText
+                android:id="@+id/editTextContenido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/rounded_edittext_background"
+                android:hint="Escribe algo..."
+                android:padding="10dp" />
+
+            <SearchView
+                android:id="@+id/searchViewArticulos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:queryHint="Buscar artículos..."
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/textViewArticulos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Seleccionar artículos:"
+                android:layout_marginBottom="8dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewArticulos"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/rounded_recyclerview_background" />
+
+            <Button
+                android:id="@+id/btnCrearPublicacion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Crear Publicación" />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

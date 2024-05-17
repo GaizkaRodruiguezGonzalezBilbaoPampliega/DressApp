@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
-    android:background="@color/light_white"
+    android:background="@color/colorBackground"
     tools:context=".vista.MainActivity">
 
 
@@ -13,21 +12,18 @@
         android:id="@+id/body_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"/>
+        android:background="@color/colorPrimaryDark"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="30dp"
         android:background="@drawable/round_corner"
-        android:elevation="2dp"
+        android:elevation="8dp"
         app:itemIconSize="30dp"
         app:itemRippleColor="@android:color/transparent"
-        app:menu="@menu/item_menu" />
-
-
+        app:menu="@menu/item_menu"
+        app:itemTextColor="@color/colorTextPrimary" /> <!-- Cambiar color del texto de los íconos -->
 
 </RelativeLayout>
-

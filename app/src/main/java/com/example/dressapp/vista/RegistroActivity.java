@@ -77,8 +77,8 @@ public class RegistroActivity extends AppCompatActivity {
 
         Usuario usuario = new Usuario();
         usuario.setNick(nick);
-        usuario.setNombre(nombre);
-        usuario.setEmail(email);
+        usuario.setNombreCompleto(nombre);
+        usuario.setCorreo(email);
 
         // Guardar los datos del usuario en Firestore
         db.collection("usuarios").document(userId)

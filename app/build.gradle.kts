@@ -35,10 +35,11 @@ android {
 
 dependencies {
     // Biblioteca para recortar imágenes
-
+    implementation ("com.github.castorflex.verticalviewpager:library:19.0.1")
+    implementation ("com.squareup.picasso:picasso:2.8")
 
     // Biblioteca de Material Design
-    implementation ("com.google.android.material:material:1.4.0")
+    implementation ("com.google.android.material:material:1.12.0")
 
     // Biblioteca de compatibilidad de AndroidX
     implementation ("androidx.appcompat:appcompat:1.6.1")
@@ -66,5 +67,5 @@ dependencies {
     implementation ("com.theartofdev.edmodo:android-image-cropper:2.8.0")
 
     // Biblioteca para cargar imágenes en ImageView
-    implementation ("com.squareup.picasso:picasso:2.5.2")
+
 }

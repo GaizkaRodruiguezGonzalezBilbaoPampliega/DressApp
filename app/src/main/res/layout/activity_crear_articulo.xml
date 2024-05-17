@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- ImageView para mostrar la imagen seleccionada -->
+    <ImageView
+        android:id="@+id/imgArticulo"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/article_picture_placeholder"
+    android:scaleType="centerCrop"
+    android:clickable="true"
+    android:background="?android:selectableItemBackground"
+    android:contentDescription="Seleccionar imagen del artículo"/>
+
+    <EditText
+        android:id="@+id/edtNombre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imgArticulo"
+        android:layout_margin="16dp"
+        android:layout_marginTop="-216dp"
+        android:hint="Nombre del artículo" />
+
+    <EditText
+        android:id="@+id/edtPrecio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Precio"
+        android:inputType="numberDecimal"
+        android:layout_below="@id/edtNombre"
+        android:layout_margin="16dp"/>
+
+    <EditText
+        android:id="@+id/edtColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Color"
+        android:layout_below="@id/edtPrecio"
+        android:layout_margin="16dp"/>
+
+    <EditText
+        android:id="@+id/edtProductoRef"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Referencia del producto"
+        android:layout_below="@id/edtColor"
+        android:layout_margin="16dp"/>
+
+    <EditText
+        android:id="@+id/edtLink"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enlace del artículo"
+        android:layout_below="@id/edtProductoRef"
+        android:layout_margin="16dp"/>
+
+    <Button
+        android:id="@+id/btnCrearArticulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Crear Artículo"
+        android:layout_below="@id/edtLink"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"/>
+
+</RelativeLayout>

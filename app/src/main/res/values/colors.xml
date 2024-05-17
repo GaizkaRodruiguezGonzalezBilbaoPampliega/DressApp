@@ -4,9 +4,36 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="light_white">#D2D2D2</color>
-    <color name="card_1">#A3E4D7</color>
-    <color name="card_2">#F9E79F</color>
-    <color name="card_3">#D7BDE2</color>
-    <color name="card_4">#D2C3D8</color>
-    <color name="colorPrimary">#00796B</color>
+    <!-- Color Primario -->
+    <color name="colorPrimary">#FF6F61</color>
+
+    <!-- Color Primario Oscuro -->
+    <color name="colorPrimaryDark">#D45C4A</color>
+
+    <!-- Color Secundario -->
+    <color name="colorSecondary">#484848</color>
+
+    <!-- Color de Fondo -->
+    <color name="colorBackground">#FFFFFF</color>
+
+    <!-- Color de Texto Principal -->
+    <color name="colorTextPrimary">#212121</color>
+
+    <!-- Color de Texto Secundario -->
+    <color name="colorTextSecondary">#757575</color>
+
+    <!-- Color de Acento -->
+    <color name="colorAccent">#FFD166</color>
+
+    <!-- Color de Resaltado -->
+    <color name="colorHighlight">#06D6A0</color>
+
+    <!-- Color de Error -->
+    <color name="colorError">#EF476F</color>
+
+    <!-- Color de Sombra -->
+    <color name="colorShadow">#757575</color>
+
+    <!-- Color de Separador -->
+    <color name="colorDivider">#BDBDBD</color>
 </resources>

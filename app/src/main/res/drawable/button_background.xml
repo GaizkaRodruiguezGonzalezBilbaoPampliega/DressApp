@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="20dp" /> <!-- Ajusta el radio según lo redondeado que desees los botones -->
+    <solid android:color="@color/colorPrimary" /> <!-- Usa el color de fondo que prefieras -->
+</shape>

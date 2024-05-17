@@ -15,7 +15,7 @@ import com.example.dressapp.entidades.Publicacion;
 import com.example.dressapp.entidades.Usuario;
 
 import java.util.List;
-
+/*
 public class PublicacionesAdapter extends RecyclerView.Adapter<PublicacionesAdapter.PublicacionesViewHolder> {
 
     List<Publicacion> listaPublicaciones;
@@ -57,10 +57,10 @@ public class PublicacionesAdapter extends RecyclerView.Adapter<PublicacionesAdap
         }
 
         public void setPublicacionData(Publicacion publicacion){
-            imageView.setImageResource(Integer.valueOf(publicacion.getImagenUrl()));
-            userProfile.setImageResource(Integer.valueOf(publicacion.getUsuario().getImagenPerfil()));
-            userNick.setText(publicacion.getUsuario().getNick());
-            descripcion.setText(publicacion.getDescripcion());
+            imageView.setImageBitmap(publicacion.getImagen());
+
+            userNick.setText(publicacion.getAutor().getNick());
+            descripcion.setText(publicacion.getContenido());
 
             imageView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -85,3 +85,4 @@ public class PublicacionesAdapter extends RecyclerView.Adapter<PublicacionesAdap
     }
 
 }
+        */

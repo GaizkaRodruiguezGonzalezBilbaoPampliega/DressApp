@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="circleImageView" parent="">
+    <item name="cornerFamily">rounded</item>
+    <item name="cornerSize">50%</item>
+
+</style>
+    <!-- Estilo del Edit Text -->
+    <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/edit_text_background</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+    </style>
+
+    <!-- Estilo del Text View -->
+    <style name="TextViewStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <!-- Estilo del Button -->
+    <style name="ButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@color/colorBackground</item>
+        <item name="android:background">@drawable/button_background</item>
+    </style>
+
+    <style name="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Rounded">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.App.TextInputLayout.Rounded</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.App.TextInputLayout.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+</resources>

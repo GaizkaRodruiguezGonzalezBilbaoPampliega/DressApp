@@ -1,103 +1,70 @@
 package com.example.dressapp.entidades;
 
-import java.util.List;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import java.util.Date;
 
 public class Usuario {
     private String id;
     private String nick;
-    private String nombre;
-    private String email;
-    private String imagenPerfil;
-    private String descripcion;
-    private List<String> seguidoresIds; // Lista de IDs de los seguidores
-    private List<String> seguidosIds; // Lista de IDs de los seguidos
-    private List<String> favoritosIds; // Lista de IDs de las publicaciones favoritas
+    private String nombreCompleto;
+    private String correo;
+    private Date fecha;
+    private String bio;
+    private Bitmap imagenPerfil;
 
-    public Usuario() {
-        // Constructor vacío requerido para Firebase
-    }
+    // Constructor vacío requerido para Firebase
+    public Usuario() {}
 
-    public Usuario( String nick, String nombre, String email, String descripcion, List<String> seguidoresIds, List<String> seguidosIds, List<String> favoritosIds) {
-
+    public Usuario(String nick, String nombreCompleto, String correo, Date fecha, String bio) {
         this.nick = nick;
-        this.nombre = nombre;
-        this.email = email;
-        this.imagenPerfil = "/ftosperfil/defaultProfile.png";
-        this.descripcion = descripcion;
-        this.seguidoresIds = seguidoresIds;
-        this.seguidosIds = seguidosIds;
-        this.favoritosIds = favoritosIds;
+        this.nombreCompleto = nombreCompleto;
+        this.correo = correo;
+        this.fecha = fecha;
+        this.bio = bio;
     }
 
-    public String getId() {
-        return id;
+    // Getters y setters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public String getNick() { return nick; }
+    public void setNick(String nick) { this.nick = nick; }
+
+    public String getNombreCompleto() { return nombreCompleto; }
+    public void setNombreCompleto(String nombreCompleto) { this.nombreCompleto = nombreCompleto; }
+
+    public String getCorreo() { return correo; }
+    public void setCorreo(String correo) { this.correo = correo; }
+
+    public Date getFecha() { return fecha; }
+    public void setFecha(Date fecha) { this.fecha = fecha; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public Bitmap getImagenPerfil() { return imagenPerfil; }
+
+    // Método para establecer la imagen de perfil del usuario descargada desde Firebase Storage
+    public void setImagenPerfil(final String idUsuario) {
+        // Obtén una referencia al archivo de imagen en Firebase Storage
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + idUsuario + ".jpg");
+
+        // Descarga el archivo de imagen y conviértelo en un bitmap
+        storageRef.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                // Convierte el array de bytes en un bitmap
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                // Asigna el bitmap a la propiedad de imagen de perfil del usuario
+                setImagenPerfil(bitmap);
+            }
+        });
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getNick() {
-        return nick;
-    }
-
-    public void setNick(String nick) {
-        this.nick = nick;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getImagenPerfil() {
-        return imagenPerfil;
-    }
-
-    public void setImagenPerfil(String imagenPerfil) {
-        this.imagenPerfil = imagenPerfil;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public List<String> getSeguidoresIds() {
-        return seguidoresIds;
-    }
-
-    public void setSeguidoresIds(List<String> seguidoresIds) {
-        this.seguidoresIds = seguidoresIds;
-    }
-
-    public List<String> getSeguidosIds() {
-        return seguidosIds;
-    }
-
-    public void setSeguidosIds(List<String> seguidosIds) {
-        this.seguidosIds = seguidosIds;
-    }
-
-    public List<String> getFavoritosIds() {
-        return favoritosIds;
-    }
-
-    public void setFavoritosIds(List<String> favoritosIds) {
-        this.favoritosIds = favoritosIds;
-    }
+    public void setImagenPerfil(Bitmap imagenPerfil) { this.imagenPerfil = imagenPerfil; }
 }

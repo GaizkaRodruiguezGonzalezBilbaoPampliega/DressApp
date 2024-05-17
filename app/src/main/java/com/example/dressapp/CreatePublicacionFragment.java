@@ -1,163 +1,225 @@
 package com.example.dressapp;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.provider.MediaStore;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
-import com.theartofdev.edmodo.cropper.CropImage;
+import com.example.dressapp.adapters.ArticuloSeleccionAdapter;
+import com.example.dressapp.entidades.Articulo;
+import com.example.dressapp.entidades.Publicacion;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-public class CreatePublicacionFragment extends Fragment {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
-    ImageView userpic;
-    private static final int GalleryPick = 1;
-    private static final int CAMERA_REQUEST = 100;
-    private static final int STORAGE_REQUEST = 200;
-    private static final int IMAGEPICK_GALLERY_REQUEST = 300;
-    private static final int IMAGE_PICKCAMERA_REQUEST = 400;
-    String cameraPermission[];
-    String storagePermission[];
-    Uri imageuri;
+public class CrearPublicacionActivity extends AppCompatActivity {
 
-    TextView click;
+    private static final int PICK_IMAGE_REQUEST = 1;
 
-    @SuppressLint("MissingInflatedId")
-    @Nullable
+    private EditText editTextContenido;
+    private ImageView imageViewPublicacion;
+    private Button btnCrearPublicacion;
+    private SearchView searchViewArticulos;
+    private RecyclerView recyclerViewArticulos;
+
+    private Bitmap imagenPublicacion;
+    private Uri imagenUri;
+
+    private List<Articulo> listaArticulos;
+    private List<Articulo> articulosSeleccionados;
+    private ArticuloSeleccionAdapter adaptador;
+
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private FirebaseFirestore db;
+    private FirebaseStorage storage;
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_createpublicacion, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_crear_publicacion);
 
-        // Here we are initializing
-        // the text and image View
-        click = view.findViewById(R.id.click);
-        userpic = view.findViewById(R.id.set_profile_image);
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
 
-        // allowing permissions of gallery and camera
-        cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        editTextContenido = findViewById(R.id.editTextContenido);
+        imageViewPublicacion = findViewById(R.id.imageViewPublicacion);
+        btnCrearPublicacion = findViewById(R.id.btnCrearPublicacion);
+        searchViewArticulos = findViewById(R.id.searchViewArticulos);
+        recyclerViewArticulos = findViewById(R.id.recyclerViewArticulos);
 
-        // After clicking on text we will have
-        // to choose whether to
-        // select image from camera and gallery
-        click.setOnClickListener(new View.OnClickListener() {
+        listaArticulos = new ArrayList<>();
+        articulosSeleccionados = new ArrayList<>();
+        adaptador = new ArticuloSeleccionAdapter(this, listaArticulos, articulosSeleccionados);
+
+        recyclerViewArticulos.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewArticulos.setAdapter(adaptador);
+
+        imageViewPublicacion.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                showImagePicDialog();
+            public void onClick(View v) {
+                seleccionarImagen();
             }
         });
 
-        return view;
-    }
-
-    private void showImagePicDialog() {
-        String options[] = {"Camera", "Gallery"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Pick Image From");
-        builder.setItems(options, new DialogInterface.OnClickListener() {
+        btnCrearPublicacion.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {
-                    if (!checkCameraPermission()) {
-                        requestCameraPermission();
-                    } else {
-                        pickFromGallery();
-                    }
-                } else if (which == 1) {
-                    if (!checkStoragePermission()) {
-                        requestStoragePermission();
-                    } else {
-                        pickFromGallery();
-                    }
-                }
+            public void onClick(View v) {
+                crearPublicacion();
             }
         });
-        builder.create().show();
+
+        searchViewArticulos.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adaptador.filter(newText);
+                return true;
+            }
+        });
+
+        cargarDatos();
     }
 
-    // checking storage permissions
-    private Boolean checkStoragePermission() {
-        boolean result = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-        return result;
+    private void cargarDatos() {
+        obtenerArmarioUsuario();
     }
 
-    // Requesting gallery permission
-    private void requestStoragePermission() {
-        requestPermissions(storagePermission, STORAGE_REQUEST);
-    }
-
-    // checking camera permissions
-    private Boolean checkCameraPermission() {
-        boolean result = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
-        boolean result1 = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-        return result && result1;
-    }
-
-    // Requesting camera permission
-    private void requestCameraPermission() {
-        requestPermissions(cameraPermission, CAMERA_REQUEST);
-    }
-
-    // Requesting camera and gallery
-    // permission if not given
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case CAMERA_REQUEST: {
-                if (grantResults.length > 0) {
-                    boolean camera_accepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    boolean writeStorageaccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                    if (camera_accepted && writeStorageaccepted) {
-                        pickFromGallery();
-                    } else {
-                        Toast.makeText(getActivity(), "Please Enable Camera and Storage Permissions", Toast.LENGTH_LONG).show();
+    private void obtenerArmarioUsuario() {
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            DocumentReference armarioRef = db.collection("armarios").document(userId);
+            armarioRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        List<String> idArticulos = (List<String>) documentSnapshot.get("articulos");
+                        if (idArticulos != null && !idArticulos.isEmpty()) {
+                            cargarArticulos(idArticulos);
+                        } else {
+                            // El armario está vacío o la lista de IDs de artículos es nula,
+                            // puedes mostrar un mensaje al usuario o tomar otra acción
+                        }
                     }
                 }
-            }
-            break;
-            case STORAGE_REQUEST: {
-                if (grantResults.length > 0) {
-                    boolean writeStorageaccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    if (writeStorageaccepted) {
-                        pickFromGallery();
-                    } else {
-                        Toast.makeText(getActivity(), "Please Enable Storage Permissions", Toast.LENGTH_LONG).show();
-                    }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    // Maneja el caso de falla al obtener el armario del usuario
                 }
-            }
-            break;
+            });
         }
     }
 
-    // Here we will pick image from gallery or camera
-    private void pickFromGallery() {
-        CropImage.activity().start(getContext(), this);
+    private void cargarArticulos(List<String> idArticulos) {
+        db.collection("articulos")
+                .whereIn(FieldPath.documentId(), idArticulos)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        listaArticulos.clear();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            Articulo articulo = document.toObject(Articulo.class);
+                            listaArticulos.add(articulo);
+                        }
+                        adaptador.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(this, "Error al cargar artículos", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void seleccionarImagen() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Selecciona una imagen"), PICK_IMAGE_REQUEST);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == getActivity().RESULT_OK) {
-                Uri resultUri = result.getUri();
-                Picasso.with(getActivity()).load(resultUri).into(userpic);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imagenUri = data.getData();
+            try {
+                Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagenUri);
+                imagenPublicacion = redimensionarBitmap(originalBitmap, 400, 600);
+                imageViewPublicacion.setImageBitmap(imagenPublicacion);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
+
+    private Bitmap redimensionarBitmap(Bitmap bitmap, int ancho, int alto) {
+        return Bitmap.createScaledBitmap(bitmap, ancho, alto, true);
+    }
+
+    private void crearPublicacion() {
+        String contenido = editTextContenido.getText().toString().trim();
+        if (contenido.isEmpty() || imagenUri == null || articulosSeleccionados.isEmpty()) {
+            Toast.makeText(this, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Primero subimos la imagen
+        StorageReference storageRef = storage.getReference().child("publicaciones-images/" + UUID.randomUUID().toString());
+        storageRef.putFile(imagenUri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // Una vez que la imagen se haya subido exitosamente, obtenemos su URL
+                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String imagenUrl = uri.toString();
+
+                        // Creamos un nuevo objeto Publicacion
+                        Publicacion publicacion = new Publicacion();
+                        publicacion.setAutor(currentUser.getUid());
+                        publicacion.setContenido(contenido);
+                        publicacion.setFecha(new Date());
+                        publicacion.setListaArticulos(articulosSeleccionados);
+
+                        // Guardamos la publicación en Firestore
+                        db.collection("publicaciones").add(publicacion)
+                                .addOnSuccessListener(documentReference -> {
+                                    Toast.makeText(this, "Publicación creada", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(this, "Error al crear la publicación", Toast.LENGTH_SHORT).show());
+                    });
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Error al subir la imagen", Toast.LENGTH_SHORT).show());
+    }
+
 }

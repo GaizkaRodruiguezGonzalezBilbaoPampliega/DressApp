@@ -28,6 +28,10 @@
             android:exported="true">
         </activity>
         <activity
+            android:name=".vista.CrearArticuloActivity"
+            android:exported="true">
+        </activity>
+        <activity
             android:name=".vista.MainActivity"
             android:exported="true">
             <intent-filter>
