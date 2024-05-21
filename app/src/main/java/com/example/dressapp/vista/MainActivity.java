@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         viewPager = findViewById(R.id.body_container);
         pagerAdapter = new ViewPagerAdapter(this);
+
         viewPager.setAdapter(pagerAdapter);
     }
 

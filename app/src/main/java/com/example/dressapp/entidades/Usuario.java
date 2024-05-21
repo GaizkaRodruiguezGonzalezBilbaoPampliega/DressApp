@@ -52,7 +52,7 @@ public class Usuario {
     // Método para establecer la imagen de perfil del usuario descargada desde Firebase Storage
     public void setImagenPerfil(final String idUsuario) {
         // Obtén una referencia al archivo de imagen en Firebase Storage
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + idUsuario + ".jpg");
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + idUsuario );
 
         // Descarga el archivo de imagen y conviértelo en un bitmap
         storageRef.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {

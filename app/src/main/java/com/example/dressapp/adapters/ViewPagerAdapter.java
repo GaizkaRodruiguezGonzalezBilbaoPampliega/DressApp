@@ -7,7 +7,9 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.dressapp.ArmarioFragment;
-import com.example.dressapp.CreatePublicacionFragment;
+
+
+import com.example.dressapp.CrearPublicacionFragment;
 import com.example.dressapp.ProfileFragment;
 import com.example.dressapp.PublicacionesFragment;
 
@@ -25,7 +27,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
             case 0:
                 return new PublicacionesFragment();
             case 1:
-                return new CreatePublicacionFragment();
+                return new CrearPublicacionFragment();
             case 2:
                 return new ProfileFragment();
             case 3:

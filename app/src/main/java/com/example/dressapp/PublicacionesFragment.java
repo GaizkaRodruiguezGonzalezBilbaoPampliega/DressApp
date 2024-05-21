@@ -121,12 +121,12 @@ public class PublicacionesFragment extends Fragment {
                             }
                         }
                         autor.setBio(document.getString("bio"));
-
+                        // Cargar la imagen de perfil del usuario
+                        autor.setImagenPerfil(autorId);
                         // Establecer el usuario en la publicación
                         publicacion.setAutor(autor);
 
-                        // Cargar la imagen de perfil del usuario
-                        publicacion.getAutor().setImagenPerfil(autorId);
+
 
                         // Verificar si todas las publicaciones tienen un usuario y notificar al adaptador
                         verificarNotificar();

@@ -4,8 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,40 +19,6 @@ public class ArticuloSeleccionAdapter extends RecyclerView.Adapter<ArticuloSelec
 
     private List<Articulo> listaArticulos;
     private List<Articulo> articulosSeleccionados;
-    private OnItemClickListener mListener;
-
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        mListener = listener;
-    }
-
-    public static class ArticuloViewHolder extends RecyclerView.ViewHolder {
-        public ImageView imageView;
-        public TextView textViewNombre;
-        public CheckBox checkBoxSeleccionado;
-
-        public ArticuloViewHolder(View itemView, final OnItemClickListener listener) {
-            super(itemView);
-            imageView = itemView.findViewById(R.id.imagenArticulo);
-            textViewNombre = itemView.findViewById(R.id.txtNombreArticulo);
-            checkBoxSeleccionado = itemView.findViewById(R.id.checkBoxSeleccionado);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            listener.onItemClick(position);
-                        }
-                    }
-                }
-            });
-        }
-    }
 
     public ArticuloSeleccionAdapter(List<Articulo> listaArticulos, List<Articulo> articulosSeleccionados) {
         this.listaArticulos = listaArticulos;
@@ -63,23 +28,14 @@ public class ArticuloSeleccionAdapter extends RecyclerView.Adapter<ArticuloSelec
     @NonNull
     @Override
     public ArticuloViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_articulo_seleccion, parent, false);
-        ArticuloViewHolder evh = new ArticuloViewHolder(v, mListener);
-        return evh;
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_articulo_seleccion, parent, false);
+        return new ArticuloViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ArticuloViewHolder holder, int position) {
-        Articulo currentItem = listaArticulos.get(position);
-
-        holder.imageView.setImageBitmap(currentItem.getImagen());
-        holder.textViewNombre.setText(currentItem.getNombre());
-
-        if (articulosSeleccionados.contains(currentItem)) {
-            holder.checkBoxSeleccionado.setChecked(true);
-        } else {
-            holder.checkBoxSeleccionado.setChecked(false);
-        }
+        Articulo articulo = listaArticulos.get(position);
+        holder.bind(articulo);
     }
 
     @Override
@@ -87,8 +43,46 @@ public class ArticuloSeleccionAdapter extends RecyclerView.Adapter<ArticuloSelec
         return listaArticulos.size();
     }
 
+    public class ArticuloViewHolder extends RecyclerView.ViewHolder {
+
+        private CheckBox checkBoxArticulo;
+
+        public ArticuloViewHolder(@NonNull View itemView) {
+            super(itemView);
+            checkBoxArticulo = itemView.findViewById(R.id.checkBoxSeleccionado);
+        }
+
+        public void bind(Articulo articulo) {
+            checkBoxArticulo.setText(articulo.getNombre());
+            checkBoxArticulo.setOnCheckedChangeListener(null); // Clear previous listener to prevent unwanted callbacks
+
+            // Check if the current article is selected
+            checkBoxArticulo.setChecked(articulosSeleccionados.contains(articulo));
+
+            // Handle checkbox state change
+            checkBoxArticulo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        // Add the selected article to the list
+                        articulosSeleccionados.add(articulo);
+                    } else {
+                        // Remove the article from the list
+                        articulosSeleccionados.remove(articulo);
+                    }
+                }
+            });
+        }
+    }
+
+    // Method to update the filter list
     public void filterList(ArrayList<Articulo> filteredList) {
         listaArticulos = filteredList;
         notifyDataSetChanged();
+    }
+
+    // Method to get the selected articles
+    public List<Articulo> getArticulosSeleccionados() {
+        return articulosSeleccionados;
     }
 }
