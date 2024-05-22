@@ -1,58 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    android:background="#000000">
 
-    android:background="#FFFFFF"
-    android:elevation="4dp"
-    android:orientation="vertical"
-    android:padding="16dp">
-
+    <!-- Imagen de la publicación -->
     <ImageView
         android:id="@+id/post_image"
         android:layout_width="match_parent"
-        android:layout_height="576dp"
-        android:minWidth="400dp"
-        android:minHeight="600dp"
+        android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/post_image_placeholder" />
+        android:src="@drawable/post_image_placeholder"
+        android:contentDescription="@string/post_image_desc" />
 
+    <!-- Overlay con gradiente que contiene la información del usuario y el contenido de la publicación -->
     <LinearLayout
-        android:id="@+id/post_info"
+        android:id="@+id/overlay_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/gradient_bottom_overlay"
+        android:gravity="bottom">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/profile_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/profile_picture_placeholder"
-            app:shapeAppearanceOverlay="@style/circleImageView" />
-
-        <TextView
-            android:id="@+id/username"
-            android:layout_width="wrap_content"
+        <!-- Información del usuario -->
+        <LinearLayout
+            android:id="@+id/user_info"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="usuario"
-            android:textSize="20sp"
-            android:layout_marginLeft="5dp"
-            android:textStyle="bold"
-            android:layout_weight="1"/> <!-- Esto expandirá el TextView para ocupar el espacio restante -->
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
 
+            <!-- Imagen de perfil -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/profile_image"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/profile_picture_placeholder"
+                app:shapeAppearanceOverlay="@style/circleImageView"
+                android:contentDescription="@string/profile_image_desc" />
+
+            <!-- Nombre de usuario -->
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="usuario"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:contentDescription="@string/username_desc" />
+        </LinearLayout>
+
+        <!-- Contenido de la publicación -->
+        <TextView
+            android:id="@+id/post_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Este es el contenido de la publicación."
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:contentDescription="@string/post_content_desc"
+            android:padding="8dp"
+           />
+    </LinearLayout>
+
+    <!-- Controles de la publicación -->
+    <LinearLayout
+        android:id="@+id/post_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- Botón de Like -->
         <ImageView
-            android:id="@+id/like_icon"
+            android:id="@+id/like_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_like"
-            android:layout_gravity="center_vertical|end"/> <!-- Centra verticalmente y alinea a la derecha -->
+            android:contentDescription="@string/like_button_desc"
+            android:layout_marginBottom="16dp" />
 
-        <!-- Alinea el icono de "like" al final del LinearLayout -->
+        <!-- Botón de Comentarios -->
+        <ImageView
+            android:id="@+id/comment_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_comment"
+            android:contentDescription="@string/comment_button_desc"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Botón de Compartir -->
 
     </LinearLayout>
 
-
-</LinearLayout>
+</RelativeLayout>

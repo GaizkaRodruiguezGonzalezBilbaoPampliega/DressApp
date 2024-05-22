@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import com.example.dressapp.R;
 import com.example.dressapp.adapters.PostPagerAdapter;
@@ -126,8 +125,6 @@ public class PublicacionesFragment extends Fragment {
                         // Establecer el usuario en la publicación
                         publicacion.setAutor(autor);
 
-
-
                         // Verificar si todas las publicaciones tienen un usuario y notificar al adaptador
                         verificarNotificar();
                     } else {
@@ -151,5 +148,4 @@ public class PublicacionesFragment extends Fragment {
         // Notificar al adaptador que se han actualizado todos los datos
         adapter.notifyDataSetChanged();
     }
-
 }
