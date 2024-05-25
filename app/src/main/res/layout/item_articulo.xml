@@ -10,42 +10,78 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="16dp">
 
         <!-- Imagen del artículo -->
         <ImageView
             android:id="@+id/imagenArticulo"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
             android:scaleType="centerCrop"
             android:src="@drawable/article_picture_placeholder" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        >
-        <!-- Nombre del artículo -->
-        <TextView
-            android:id="@+id/txtNombreArticulo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nombre del Artículo"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp"/>
 
-        <!-- Referencia del producto -->
-        <TextView
-            android:id="@+id/txtReferenciaProducto"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Referencia del Producto"
-            android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginTop="4dp"/>
-    </LinearLayout>
-        <!-- Otros detalles del artículo (precio, color, etc.) si es necesario -->
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="8dp">
+
+            <!-- Nombre del artículo -->
+            <TextView
+                android:id="@+id/txtNombreArticulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nombre del Artículo"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Precio del artículo -->
+            <TextView
+                android:id="@+id/txtPrecioArticulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Precio: $0"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Color del artículo -->
+            <TextView
+                android:id="@+id/txtColorArticulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Color: N/A"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Referencia del producto -->
+            <TextView
+                android:id="@+id/txtReferenciaProducto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Referencia del Producto"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Link del artículo -->
+            <TextView
+                android:id="@+id/txtLinkArticulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Link: www.example.com"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginBottom="4dp"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -62,6 +62,7 @@ public class Publicacion {
         });
     }
 
+
     public void setImagenBitmap(Bitmap imagen) { this.imagen = imagen; }
 
     public String getContenido() { return contenido; }

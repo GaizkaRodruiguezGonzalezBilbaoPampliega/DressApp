@@ -3,6 +3,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+        <!-- Descripciones de los íconos -->
+        <string name="like_icon_desc">Icono de Me gusta</string>
+        <string name="comment_icon_desc">Icono de Comentarios</string>
+
+        <!-- Descripciones de los contadores -->
+        <string name="like_count_desc">Contador de Me gusta</string>
+        <string name="comment_count_desc">Contador de Comentarios</string>
+
     <string name="post_image_desc">Imagen de la publicación</string>
     <string name="profile_image_desc">Imagen de perfil</string>
     <string name="username_desc">Nombre de usuario</string>
@@ -13,4 +21,5 @@
     <string name="home_text">Home</string>
     <string name="create_text">Create</string>
     <string name="profile_text">Profile</string>
+    <string name="articles_icon_desc" />
 </resources>

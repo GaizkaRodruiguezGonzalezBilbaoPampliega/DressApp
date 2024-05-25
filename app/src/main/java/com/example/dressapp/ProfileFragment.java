@@ -1,3 +1,4 @@
+
 package com.example.dressapp;
 
 import android.content.Intent;
@@ -5,9 +6,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,7 +37,6 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.Map;
-//import com.bumptech.glide.Glide;
 
 public class ProfileFragment extends Fragment {
 
@@ -47,12 +49,14 @@ public class ProfileFragment extends Fragment {
     private TextView nPublicaciones;
     private TextView nSeguidores;
     private TextView nSeguidos;
+    private Button btnPublicaciones;
+    private GridLayout galeriaPublicaciones;
 
     private FirebaseFirestore db;
     private FirebaseStorage storage;
     private FirebaseAuth auth;
     private String userID;
-private  GridLayout galeriaPublicaciones;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,6 +69,7 @@ private  GridLayout galeriaPublicaciones;
         nPublicaciones = view.findViewById(R.id.nPublicaciones);
         nSeguidores = view.findViewById(R.id.nSeguidores);
         nSeguidos = view.findViewById(R.id.nSeguidos);
+        btnPublicaciones = view.findViewById(R.id.btnPublicaciones);
         galeriaPublicaciones = view.findViewById(R.id.galeriaPublicaciones);
 
         db = FirebaseFirestore.getInstance();
@@ -74,6 +79,7 @@ private  GridLayout galeriaPublicaciones;
         FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser != null) {
             userID = currentUser.getUid();
+            Log.d("ProfileFragment", "UserID: " + userID);
             cargarPerfil(userID);
             mostrarPublicaciones();
         } else {
@@ -82,12 +88,9 @@ private  GridLayout galeriaPublicaciones;
             getActivity().finish();
         }
 
-        fotoPerfil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cambiarFotoPerfil();
-            }
-        });
+        btnPublicaciones.setOnClickListener(v -> mostrarPublicaciones());
+
+        fotoPerfil.setOnClickListener(v -> cambiarFotoPerfil());
 
         return view;
     }
@@ -108,13 +111,8 @@ private  GridLayout galeriaPublicaciones;
                         public void onSuccess(Uri uri) {
                             Picasso.get().load(uri).into(fotoPerfil);
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Manejar el error si no se puede obtener la URL de la imagen
-                            Toast.makeText(getActivity(), "Error al cargar la foto de perfil", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    }).addOnFailureListener(exception ->
+                            Toast.makeText(getActivity(), "Error al cargar la foto de perfil", Toast.LENGTH_SHORT).show());
 
                     // Cargar las estadísticas
                     obtenerCantidadSeguidores(uid);
@@ -123,89 +121,67 @@ private  GridLayout galeriaPublicaciones;
                     Toast.makeText(getActivity(), "No se encontraron datos de perfil", Toast.LENGTH_SHORT).show();
                 }
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(), "Error al cargar el perfil", Toast.LENGTH_SHORT).show();
-            }
-        });
+        }).addOnFailureListener(e ->
+                Toast.makeText(getActivity(), "Error al cargar el perfil", Toast.LENGTH_SHORT).show());
     }
 
     private void obtenerCantidadSeguidores(String uid) {
-        db.collection("seguidores").whereEqualTo("idSeguido", uid).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                int cantidadSeguidores = queryDocumentSnapshots.size();
-                nSeguidores.setText(String.valueOf(cantidadSeguidores) + " seguidores");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(), "Error al obtener la cantidad de seguidores", Toast.LENGTH_SHORT).show();
-            }
-        });
+        db.collection("seguidores").whereEqualTo("idSeguido", uid).get().addOnSuccessListener(queryDocumentSnapshots -> {
+            int cantidadSeguidores = queryDocumentSnapshots.size();
+            nSeguidores.setText(String.valueOf(cantidadSeguidores) + " seguidores");
+        }).addOnFailureListener(e ->
+                Toast.makeText(getActivity(), "Error al obtener la cantidad de seguidores", Toast.LENGTH_SHORT).show());
     }
 
     private void mostrarCantidadSeguidos(String uid) {
-        db.collection("seguidores").whereEqualTo("idSeguidor", uid).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                int cantidadSeguidos = queryDocumentSnapshots.size();
-                nSeguidos.setText(String.valueOf(cantidadSeguidos) + " seguidos");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(), "Error al obtener la cantidad de seguidos", Toast.LENGTH_SHORT).show();
-            }
-        });
+        db.collection("seguidores").whereEqualTo("idSeguidor", uid).get().addOnSuccessListener(queryDocumentSnapshots -> {
+            int cantidadSeguidos = queryDocumentSnapshots.size();
+            nSeguidos.setText(String.valueOf(cantidadSeguidos) + " seguidos");
+        }).addOnFailureListener(e ->
+                Toast.makeText(getActivity(), "Error al obtener la cantidad de seguidos", Toast.LENGTH_SHORT).show());
     }
 
     private void mostrarPublicaciones() {
-        db.collection("publicaciones").whereEqualTo("uid", userID).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                int cantidadPublicaciones = queryDocumentSnapshots.size();
-                nPublicaciones.setText(String.valueOf(cantidadPublicaciones) + " publicaciones");
+        Log.d("ProfileFragment", "Mostrando publicaciones para userID: " + userID);
+        db.collection("publicaciones").whereEqualTo("idAutor", userID).get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    Log.d("ProfileFragment", "Publicaciones encontradas: " + queryDocumentSnapshots.size());
+                    int cantidadPublicaciones = queryDocumentSnapshots.size();
+                    nPublicaciones.setText(String.valueOf(cantidadPublicaciones) + " publicaciones");
 
-                // Limpia el contenido existente del GridLayout
                     galeriaPublicaciones.removeAllViews();
 
-                // Itera sobre cada documento de publicación
-                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                    // Obtén los datos de la publicación actual
-                    Map<String, Object> publicacion = document.getData();
-                    String urlImagen = publicacion.get("urlImagen").toString();
-
-                    // Crea un ImageView para mostrar la imagen de la publicación
-                    ImageView imageView = new ImageView(getActivity());
-                    GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
-                    // Ajusta los parámetros de diseño según tus necesidades
-                    // Aquí, por ejemplo, se establece el ancho y la altura de la imagen
-                    layoutParams.width = GridLayout.LayoutParams.WRAP_CONTENT;
-                    layoutParams.height = GridLayout.LayoutParams.WRAP_CONTENT;
-                    // Agrega margen a la derecha e inferior de la imagen
-                    layoutParams.rightMargin = 16;
-                    layoutParams.bottomMargin = 16;
-                    imageView.setLayoutParams(layoutParams);
-
-                    // Carga la imagen desde la URL utilizando Glide o Picasso
-                  Glide.with(getActivity())
-                            .load(urlImagen)
-                            .into(imageView);
-
-                    // Agrega el ImageView al GridLayout
-                      galeriaPublicaciones.addView(imageView);
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(), "Error al obtener las publicaciones", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Map<String, Object> publicacion = document.getData();
+                        Log.d("ProfileFragment", "Cargando publicación: " + publicacion.toString());
+                        agregarPublicacion(document.getId(), publicacion);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("ProfileFragment", "Error al obtener las publicaciones", e);
+                    Toast.makeText(getActivity(), "Error al obtener las publicaciones", Toast.LENGTH_SHORT).show();
+                });
     }
 
+    private void agregarPublicacion(String docId, Map<String, Object> publicacion) {
+        if (publicacion.containsKey("urlImagen")) {
+            String urlImagen = publicacion.get("urlImagen").toString();
+            Log.d("ProfileFragment", "URL de la imagen: " + urlImagen);
+
+            ImageView imageView = new ImageView(getActivity());
+            GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
+            layoutParams.width = GridLayout.LayoutParams.WRAP_CONTENT;
+            layoutParams.height = GridLayout.LayoutParams.WRAP_CONTENT;
+            layoutParams.rightMargin = 16;
+            layoutParams.bottomMargin = 16;
+            imageView.setLayoutParams(layoutParams);
+
+            Glide.with(getActivity()).load(urlImagen).into(imageView);
+            galeriaPublicaciones.addView(imageView);
+        } else {
+            Log.w("ProfileFragment", "La publicación no contiene el campo 'urlImagen'");
+        }
+    }
 
     private void cambiarFotoPerfil() {
         Intent intent = new Intent(Intent.ACTION_PICK);
@@ -222,20 +198,15 @@ private  GridLayout galeriaPublicaciones;
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), filePath);
                 fotoPerfil.setImageBitmap(bitmap);
 
-                // Subir la imagen a Firebase Storage
                 if (filePath != null) {
                     StorageReference fotoPerfilRef = storage.getReference().child("profile_images/" + userID);
-                    fotoPerfilRef.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Toast.makeText(getActivity(), "Foto de perfil actualizada", Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getActivity(), "Error al actualizar la foto de perfil", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    fotoPerfilRef.putFile(filePath).addOnSuccessListener(taskSnapshot ->
+                            fotoPerfilRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                Picasso.get().load(uri).into(fotoPerfil);
+                                Toast.makeText(getActivity(), "Foto de perfil actualizada", Toast.LENGTH_SHORT).show();
+                            })
+                    ).addOnFailureListener(e ->
+                            Toast.makeText(getActivity(), "Error al actualizar la foto de perfil", Toast.LENGTH_SHORT).show());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -243,4 +214,3 @@ private  GridLayout galeriaPublicaciones;
         }
     }
 }
-

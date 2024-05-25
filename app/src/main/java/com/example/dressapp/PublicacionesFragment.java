@@ -5,25 +5,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.dressapp.R;
 import com.example.dressapp.adapters.PostPagerAdapter;
 import com.example.dressapp.entidades.Publicacion;
 import com.example.dressapp.entidades.Usuario;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import fr.castorflex.android.verticalviewpager.VerticalViewPager;
@@ -35,7 +29,8 @@ public class PublicacionesFragment extends Fragment {
     private List<Publicacion> publicaciones = new ArrayList<>();
     private FirebaseFirestore db;
 
-    public PublicacionesFragment() {}
+    public PublicacionesFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,86 +61,60 @@ public class PublicacionesFragment extends Fragment {
             }
 
             if (queryDocumentSnapshots != null) {
-                // Limpiar la lista de publicaciones antes de agregar nuevas
-                publicaciones.clear();
-
                 for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                     if (doc.getType() == DocumentChange.Type.ADDED) {
                         // Se ha agregado una nueva publicación
                         Publicacion publicacion = new Publicacion();
                         // Obtener los datos de la publicación
-                        String idAutor = doc.getDocument().getString("idAutor");
-                        publicacion.setContenido(doc.getDocument().getString("contenido"));
-                        publicacion.setFecha(doc.getDocument().getTimestamp("fecha").toDate());
-                        publicacion.setnLikes(doc.getDocument().getLong("nLikes").intValue());
-                        publicacion.setnComentarios(doc.getDocument().getLong("nComentarios").intValue());
-                        String idPublicacion = doc.getDocument().getId();
-                        publicacion.setImagen(idPublicacion);
-                        // Obtener y establecer el usuario correspondiente a la publicación
-                        obtenerUsuario(publicacion, idAutor);
-                        // Agregar la publicación a la lista
-                        publicaciones.add(publicacion);
+                        cargarDatosPublicacion(publicacion, doc.getDocument());
                     }
-                }
-
-                // Notificar al adaptador que se han actualizado los datos
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    // Método para obtener y establecer el usuario correspondiente a la publicación
-    private void obtenerUsuario(final Publicacion publicacion, String autorId) {
-        // Consultar la colección de usuarios utilizando el ID del autor
-        db.collection("usuarios").document(autorId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        // Obtener los datos del usuario
-                        Usuario autor = new Usuario();
-                        autor.setId(document.getId());
-                        autor.setNick(document.getString("nick"));
-                        autor.setNombreCompleto(document.getString("nombreCompleto"));
-                        autor.setCorreo(document.getString("correo"));
-                        String fechaString = document.getString("fecha");
-                        if (fechaString != null) {
-                            try {
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                                Date fechaDate = dateFormat.parse(fechaString);
-                                autor.setFecha(fechaDate);
-                            } catch (ParseException e) {
-                                Log.e("Firestore", "Error al parsear la fecha del usuario", e);
-                            }
-                        }
-                        autor.setBio(document.getString("bio"));
-                        // Cargar la imagen de perfil del usuario
-                        autor.setImagenPerfil(autorId);
-                        // Establecer el usuario en la publicación
-                        publicacion.setAutor(autor);
-
-                        // Verificar si todas las publicaciones tienen un usuario y notificar al adaptador
-                        verificarNotificar();
-                    } else {
-                        Log.e("Firestore", "No se encontró el usuario correspondiente al ID: " + autorId);
-                    }
-                } else {
-                    Log.e("Firestore", "Error al obtener el usuario", task.getException());
                 }
             }
         });
     }
 
-    // Método para verificar si todas las publicaciones tienen un usuario y notificar al adaptador
-    private void verificarNotificar() {
-        for (Publicacion publicacion : publicaciones) {
-            if (publicacion.getAutor() == null || publicacion.getAutor().getImagenPerfil() == null) {
-                // Aún hay publicaciones sin usuario o imagen de perfil cargada, espera hasta la próxima vez
-                return;
-            }
+    // Método para cargar los datos de la publicación y el usuario correspondiente desde Firestore
+    private void cargarDatosPublicacion(final Publicacion publicacion, DocumentSnapshot document) {
+        // Obtener los datos de la publicación
+        publicacion.setId(document.getId());
+        publicacion.setContenido(document.getString("contenido"));
+        publicacion.setFecha(document.getTimestamp("fecha").toDate());
+        publicacion.setnLikes(document.getLong("nLikes").intValue());
+        publicacion.setnComentarios(document.getLong("nComentarios").intValue());
+        publicacion.setImagen(document.getId());
+        List<String> listaArticulosIds = (List<String>) document.get("articulos");
+        if (listaArticulosIds != null) {
+            publicacion.setListaArticulos(listaArticulosIds);
         }
-        // Notificar al adaptador que se han actualizado todos los datos
-        adapter.notifyDataSetChanged();
+        String idAutor = document.getString("idAutor");
+
+        // Obtener y establecer el usuario correspondiente a la publicación
+        db.collection("usuarios").document(idAutor).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot userDocument = task.getResult();
+                if (userDocument.exists()) {
+                    Usuario autor = new Usuario();
+                    autor.setId(userDocument.getId());
+                    autor.setNick(userDocument.getString("nick"));
+                    autor.setNombreCompleto(userDocument.getString("nombreCompleto"));
+                    autor.setCorreo(userDocument.getString("correo"));
+                    autor.setImagenPerfil(userDocument.getId());
+
+                    // Establecer más datos del usuario si es necesario
+                    publicacion.setAutor(autor);
+
+                    // Agregar la publicación a la lista
+                    publicaciones.add(publicacion);
+                    // Notificar al adaptador después de cargar los datos del usuario
+                    adapter.notifyDataSetChanged();
+                } else {
+                    Log.e("Firestore", "No se encontró el usuario correspondiente al ID: " + idAutor);
+                    // Aquí puedes manejar el caso en el que no se encuentre el usuario
+                }
+            } else {
+                Log.e("Firestore", "Error al obtener el usuario", task.getException());
+                // Aquí puedes manejar el error al obtener el usuario
+            }
+        });
     }
 }

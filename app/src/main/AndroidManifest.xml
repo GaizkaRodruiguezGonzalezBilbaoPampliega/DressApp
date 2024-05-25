@@ -20,7 +20,11 @@
         android:theme="@style/Theme.DressApp"
         tools:targetApi="31">
         <activity
-            android:name=".vista.RegistroActivity"
+            android:name=".vista.UserProfileActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".ComentariosActivity"
             android:exported="true">
         </activity>
         <activity

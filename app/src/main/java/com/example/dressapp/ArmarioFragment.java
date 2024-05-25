@@ -6,16 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.dressapp.R;
+
 import com.example.dressapp.adapters.ArticuloAdapter;
-import com.example.dressapp.entidades.Armario;
 import com.example.dressapp.entidades.Articulo;
 import com.example.dressapp.manager.ImageDownloadCallback;
 import com.example.dressapp.vista.CrearArticuloActivity;
@@ -57,7 +55,7 @@ public class ArmarioFragment extends Fragment {
 
         // Inicializa la lista de artículos y el adaptador
         listaArticulos = new ArrayList<>();
-        adaptador = new ArticuloAdapter(listaArticulos);
+        adaptador = new ArticuloAdapter( listaArticulos);
 
         // Configura el RecyclerView
         RecyclerView recyclerView = view.findViewById(R.id.recyclerViewArticulos);

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="button_enviar" type="id" />
+    <item name="edit_text_comentario" type="id" />
+    <item name="layout_comentar" type="id" />
+    <item name="recycler_view_comentarios" type="id" />
+</resources>
