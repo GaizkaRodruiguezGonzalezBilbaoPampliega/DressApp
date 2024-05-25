@@ -11,9 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.dressapp.R;
 import com.example.dressapp.entidades.Articulo;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -64,8 +64,8 @@ public class ArticuloAdapter extends RecyclerView.Adapter<ArticuloAdapter.Articu
         }
 
         public void bind(Articulo articulo) {
-            // Cargar la imagen del artículo usando Picasso
-            Picasso.get().load(articulo.getLink()).into(imagenArticulo);
+            // Cargar la imagen del artículo utilizando Glide
+            Glide.with(itemView.getContext()).load(articulo.getLink()).into(imagenArticulo);
             txtNombreArticulo.setText(articulo.getNombre());
             txtPrecioArticulo.setText(String.valueOf(articulo.getPrecio()));
             txtColorArticulo.setText(articulo.getColor());

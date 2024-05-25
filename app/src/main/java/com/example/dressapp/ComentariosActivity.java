@@ -69,14 +69,11 @@ public class ComentariosActivity extends AppCompatActivity implements Comentario
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         comentariosList.clear();
-                        int comentariosCount = task.getResult().size();
-                        AtomicInteger counter = new AtomicInteger(0);
 
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Comentario comentario = new Comentario();
                             comentario.setId(document.getId());
                             comentario.setContenido(document.getString("contenido"));
-                            comentario.setFecha(document.getTimestamp("fecha").toDate());
 
                             // Obtener y establecer el autor del comentario
                             String autorId = document.getString("idUsuario");
@@ -90,31 +87,27 @@ public class ComentariosActivity extends AppCompatActivity implements Comentario
                                             autor.setNick(authorDoc.getString("nick"));
                                             autor.setNombreCompleto(authorDoc.getString("nombreCompleto"));
                                             autor.setCorreo(authorDoc.getString("correo"));
+                                            // Establecer la imagen del autor si la tienes en tu entidad Usuario
                                             autor.setImagenPerfil(authorDoc.getString("imagenPerfil"));
                                             comentario.setAutor(autor);
+                                            comentariosList.add(comentario); // Agregar comentario a la lista
+                                            adapter.notifyDataSetChanged(); // Notificar al adaptador
                                         } else {
                                             Log.e("Firestore", "No se encontró el autor del comentario");
                                         }
                                     } else {
                                         Log.e("Firestore", "Error al obtener el autor del comentario", authorTask.getException());
                                     }
-
-                                    if (counter.incrementAndGet() == comentariosCount) {
-                                        // Notificar al adaptador solo cuando se hayan procesado todos los comentarios
-                                        adapter.notifyDataSetChanged();
-                                    }
                                 });
                             } else {
                                 Log.e("Firestore", "El ID del autor del comentario es nulo");
                             }
-                            comentariosList.add(comentario);
                         }
                     } else {
                         Log.e("Firestore", "Error al cargar los comentarios", task.getException());
                     }
                 });
     }
-
 
 
     private void enviarComentario() {
