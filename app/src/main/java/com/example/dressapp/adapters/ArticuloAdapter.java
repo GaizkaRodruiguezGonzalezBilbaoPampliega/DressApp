@@ -14,10 +14,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.dressapp.R;
 import com.example.dressapp.entidades.Articulo;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
 public class ArticuloAdapter extends RecyclerView.Adapter<ArticuloAdapter.ArticuloViewHolder> {
+    static FirebaseAuth mAuth ;
+
 
     private List<Articulo> listaArticulos;
 
@@ -64,8 +70,10 @@ public class ArticuloAdapter extends RecyclerView.Adapter<ArticuloAdapter.Articu
         }
 
         public void bind(Articulo articulo) {
-            // Cargar la imagen del artículo utilizando Glide
-            Glide.with(itemView.getContext()).load(articulo.getLink()).into(imagenArticulo);
+            // Cargar la imagen del artículo utilizando Glid
+
+
+            Glide.with(itemView.getContext()).load(articulo.getImagen()).into(imagenArticulo);
             txtNombreArticulo.setText(articulo.getNombre());
             txtPrecioArticulo.setText(String.valueOf(articulo.getPrecio()));
             txtColorArticulo.setText(articulo.getColor());
@@ -73,15 +81,12 @@ public class ArticuloAdapter extends RecyclerView.Adapter<ArticuloAdapter.Articu
             txtLinkArticulo.setText(articulo.getLink());
 
             // Configurar el clic en el card para abrir el enlace del artículo
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Abrir el enlace del artículo en un navegador web
-                    String url = articulo.getLink();
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(url));
-                    itemView.getContext().startActivity(intent);
-                }
+            itemView.setOnClickListener(v -> {
+                // Abrir el enlace del artículo en un navegador web
+                String url = articulo.getLink();
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                itemView.getContext().startActivity(intent);
             });
         }
 
