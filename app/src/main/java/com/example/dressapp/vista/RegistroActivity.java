@@ -51,21 +51,18 @@ public class RegistroActivity extends AppCompatActivity {
         String contraseña = editTextContraseña.getText().toString();
 
         mAuth.createUserWithEmailAndPassword(email, contraseña)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user != null) {
-                                // Registro exitoso, guarda los datos adicionales del usuario en Firestore
-                                guardarDatosUsuario(user.getUid());
-                            }
-                        } else {
-                            // Error en el registro
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(RegistroActivity.this, "Error al registrar usuario.",
-                                    Toast.LENGTH_SHORT).show();
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            System.out.println(user.getUid());
+                            guardarDatosUsuario(user.getUid());
                         }
+                    } else {
+                        // Error en el registro
+                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                        Toast.makeText(RegistroActivity.this, "Error al registrar usuario.",
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -79,22 +76,20 @@ public class RegistroActivity extends AppCompatActivity {
         usuario.setNick(nick);
         usuario.setNombreCompleto(nombre);
         usuario.setCorreo(email);
+        usuario.setBio("");
 
         // Guardar los datos del usuario en Firestore
         db.collection("usuarios").document(userId)
                 .set(usuario)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(RegistroActivity.this, "Usuario registrado exitosamente.",
-                                    Toast.LENGTH_SHORT).show();
-                            finish();
-                        } else {
-                            Log.e(TAG, "Error al guardar datos de usuario en Firestore.", task.getException());
-                            Toast.makeText(RegistroActivity.this, "Error al guardar datos de usuario.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(RegistroActivity.this, "Usuario registrado exitosamente.",
+                                Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Log.e(TAG, "Error al guardar datos de usuario en Firestore.", task.getException());
+                        Toast.makeText(RegistroActivity.this, "Error al guardar datos de usuario.",
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
     }

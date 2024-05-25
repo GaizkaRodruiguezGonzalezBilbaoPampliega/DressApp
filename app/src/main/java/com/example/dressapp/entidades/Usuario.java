@@ -6,21 +6,23 @@ import android.graphics.BitmapFactory;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.io.Serializable;
 import java.util.Date;
 
-public class Usuario {
+public class Usuario implements Serializable {
     private String id;
     private String nick;
     private String nombreCompleto;
     private String correo;
     private Date fecha;
     private String bio;
-    private Bitmap imagenPerfil;
+    private transient Bitmap imagenPerfil; // Este campo no será serializado
 
     // Constructor vacío requerido para Firebase
     public Usuario() {}
 
-    public Usuario(String nick, String nombreCompleto, String correo, Date fecha, String bio) {
+    public Usuario(String bio, String correo, Date fecha, String nick, String nombreCompleto) {
         this.nick = nick;
         this.nombreCompleto = nombreCompleto;
         this.correo = correo;
@@ -61,10 +63,12 @@ public class Usuario {
                 // Convierte el array de bytes en un bitmap
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 // Asigna el bitmap a la propiedad de imagen de perfil del usuario
-                setImagenPerfil(bitmap);
+                setImagenPerfil2(bitmap);
             }
         });
     }
 
-    public void setImagenPerfil(Bitmap imagenPerfil) { this.imagenPerfil = imagenPerfil; }
+    public void setImagenPerfil2(Bitmap imagenPerfil) {
+        this.imagenPerfil = imagenPerfil;
+    }
 }

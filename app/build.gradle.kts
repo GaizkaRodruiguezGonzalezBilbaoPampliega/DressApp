@@ -67,7 +67,6 @@ dependencies {
     implementation ("com.theartofdev.edmodo:android-image-cropper:2.8.0")
 
     // Biblioteca para cargar imágenes en ImageView
-    implementation ("com.github.bumptech.glide:glide:4.16.0")
-
-
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
 }

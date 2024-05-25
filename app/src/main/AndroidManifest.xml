@@ -28,6 +28,10 @@
             android:exported="true">
         </activity>
         <activity
+            android:name=".vista.RegistroActivity"
+            android:exported="true">
+        </activity>
+        <activity
             android:name=".vista.LoginActivity"
             android:exported="true">
         </activity>
