@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -32,7 +33,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class CrearArticuloActivity extends AppCompatActivity {
 
@@ -67,19 +70,9 @@ public class CrearArticuloActivity extends AppCompatActivity {
         edtLink = findViewById(R.id.edtLink);
         btnGuardar = findViewById(R.id.btnCrearArticulo);
 
-        imgArticulo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dispatchTakePictureIntent();
-            }
-        });
+        imgArticulo.setOnClickListener(v -> dispatchTakePictureIntent());
 
-        btnGuardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                guardarArticulo();
-            }
-        });
+        btnGuardar.setOnClickListener(v -> guardarArticulo());
     }
 
     private void dispatchTakePictureIntent() {
@@ -145,48 +138,64 @@ public class CrearArticuloActivity extends AppCompatActivity {
         // Guardamos cada dato del artículo por separado en Firestore
         nuevoArticuloRef
                 .set(new HashMap<String, Object>())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Guardamos cada dato del artículo por separado en Firestore
-                        nuevoArticuloRef.update("nombre", nombre);
-                        nuevoArticuloRef.update("precio", precio);
-                        nuevoArticuloRef.update("color", color);
-                        nuevoArticuloRef.update("productoRef", productoRef);
-                        nuevoArticuloRef.update("link", link);
+                .addOnSuccessListener(aVoid -> {
+                    // Guardamos cada dato del artículo por separado en Firestore
+                    nuevoArticuloRef.update("nombre", nombre);
+                    nuevoArticuloRef.update("precio", precio);
+                    nuevoArticuloRef.update("color", color);
+                    nuevoArticuloRef.update("productoRef", productoRef);
+                    nuevoArticuloRef.update("link", link);
 
-                        // Obtenemos el ID del documento recién creado
-                        String idArticulo = nuevoArticuloRef.getId();
+                    // Obtenemos el ID del documento recién creado
+                    String idArticulo = nuevoArticuloRef.getId();
 
-                        // Guardamos la imagen del artículo en Storage con el ID del artículo como nombre de archivo
-                        guardarImagenArticulo(idArticulo, imagenArticulo);
+                    // Guardamos la imagen del artículo en Storage con el ID del artículo como nombre de archivo
+                    guardarImagenArticulo(idArticulo, imagenArticulo);
 
-                        // Agregamos el ID del artículo al array de artículos en la colección "armarios" del usuario
-                        db.collection("armarios").document(userId)
-                                .update("articulos", FieldValue.arrayUnion(idArticulo))
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(CrearArticuloActivity.this, "Artículo y datos guardados con éxito", Toast.LENGTH_SHORT).show();
-                                        finish();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.e("CrearArticuloActivity", "Error al agregar el ID del artículo al array de artículos en el armario", e);
-                                        Toast.makeText(CrearArticuloActivity.this, "Error al guardar el artículo en el armario", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
+                    // Referencia al documento del armario del usuario
+                    DocumentReference armarioRef = db.collection("armarios").document(userId);
+
+                    // Verifica si el documento del armario existe
+                    armarioRef.get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                // El documento del armario existe, agrega el ID del artículo al array de artículos
+                                armarioRef.update("articulos", FieldValue.arrayUnion(idArticulo))
+                                        .addOnSuccessListener(aVoid1 -> {
+                                            Toast.makeText(CrearArticuloActivity.this, "Artículo y datos guardados con éxito", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("CrearArticuloActivity", "Error al agregar el ID del artículo al array de artículos en el armario", e);
+                                            Toast.makeText(CrearArticuloActivity.this, "Error al guardar el artículo en el armario", Toast.LENGTH_SHORT).show();
+                                        });
+                            } else {
+                                // El documento del armario no existe, crea uno nuevo y luego agrega el ID del artículo
+                                Map<String, Object> nuevoArmario = new HashMap<>();
+                                nuevoArmario.put("articulos", Arrays.asList(idArticulo));
+
+                                armarioRef.set(nuevoArmario)
+                                        .addOnSuccessListener(aVoid1 -> {
+                                            Toast.makeText(CrearArticuloActivity.this, "Armario creado y artículo guardado con éxito", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("CrearArticuloActivity", "Error al crear el armario y guardar el artículo", e);
+                                            Toast.makeText(CrearArticuloActivity.this, "Error al guardar el artículo en el armario", Toast.LENGTH_SHORT).show();
+                                        });
+                            }
+                        } else {
+                            Log.e("CrearArticuloActivity", "Error al verificar el armario del usuario", task.getException());
+                            Toast.makeText(CrearArticuloActivity.this, "Error al verificar el armario del usuario", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("CrearArticuloActivity", "Error al guardar los datos del artículo en Firestore", e);
-                        Toast.makeText(CrearArticuloActivity.this, "Error al guardar los datos del artículo", Toast.LENGTH_SHORT).show();
-                    }
+                .addOnFailureListener(e -> {
+                    Log.e("CrearArticuloActivity", "Error al guardar los datos del artículo en Firestore", e);
+                    Toast.makeText(CrearArticuloActivity.this, "Error al guardar los datos del artículo", Toast.LENGTH_SHORT).show();
                 });
+
     }
 
     private void guardarImagenArticulo(String idArticulo, Bitmap imagenArticulo) {
@@ -198,18 +207,10 @@ public class CrearArticuloActivity extends AppCompatActivity {
         byte[] imageData = baos.toByteArray();
 
         imageRef.putBytes(imageData)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(CrearArticuloActivity.this, "Imagen del artículo guardada con éxito", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("CrearArticuloActivity", "Error al subir la imagen del artículo", e);
-                        Toast.makeText(CrearArticuloActivity.this, "Error al subir la imagen del artículo", Toast.LENGTH_SHORT).show();
-                    }
+                .addOnSuccessListener(taskSnapshot -> Toast.makeText(CrearArticuloActivity.this, "Imagen del artículo guardada con éxito", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> {
+                    Log.e("CrearArticuloActivity", "Error al subir la imagen del artículo", e);
+                    Toast.makeText(CrearArticuloActivity.this, "Error al subir la imagen del artículo", Toast.LENGTH_SHORT).show();
                 });
     }
 }

@@ -65,13 +65,10 @@ public class ArmarioFragment extends Fragment {
         // Configura el botón de agregar artículo
         Button btnAgregarArticulo = view.findViewById(R.id.btnAgregarArticulo);
 
-        btnAgregarArticulo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Intent para abrir la actividad CrearArticuloActivity
-                Intent intent = new Intent(getActivity(), CrearArticuloActivity.class);
-                startActivity(intent);
-            }
+        btnAgregarArticulo.setOnClickListener(v -> {
+            // Intent para abrir la actividad CrearArticuloActivity
+            Intent intent = new Intent(getActivity(), CrearArticuloActivity.class);
+            startActivity(intent);
         });
 
         // Obtiene el armario del usuario actual
@@ -82,24 +79,18 @@ public class ArmarioFragment extends Fragment {
         if (currentUser != null) {
             String userId = currentUser.getUid();
             DocumentReference armarioRef = db.collection("armarios").document(userId);
-            armarioRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if (documentSnapshot.exists()) {
-                        List<String> idArticulos = (List<String>) documentSnapshot.get("articulos");
-                        if (idArticulos != null && !idArticulos.isEmpty()) {
-                            cargarDetallesArticulos(idArticulos);
-                        } else {
-                            // El armario está vacío o la lista de IDs de artículos es nula,
-                            // puedes mostrar un mensaje al usuario o tomar otra acción
-                        }
+            armarioRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    List<String> idArticulos = (List<String>) documentSnapshot.get("articulos");
+                    if (idArticulos != null && !idArticulos.isEmpty()) {
+                        cargarDetallesArticulos(idArticulos);
+                    } else {
+                        // El armario está vacío o la lista de IDs de artículos es nula,
+                        // puedes mostrar un mensaje al usuario o tomar otra acción
                     }
                 }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    // Maneja el caso de falla al obtener el armario del usuario
-                }
+            }).addOnFailureListener(e -> {
+                // Maneja el caso de falla al obtener el armario del usuario
             });
         }
     }
@@ -109,29 +100,23 @@ public class ArmarioFragment extends Fragment {
 
         for (String idArticulo : idArticulos) {
             DocumentReference articuloRef = db.collection("articulos").document(idArticulo);
-            articuloRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if (documentSnapshot.exists()) {
-                        Articulo articulo = documentSnapshot.toObject(Articulo.class);
-                        if (articulo != null) {
-                            // Establece el callback para notificar cuando la imagen se descargue
-                            articulo.setImageDownloadCallback(new ImageDownloadCallback() {
-                                @Override
-                                public void onImageDownloaded() {
-                                    // Notifica al adaptador cuando la imagen se haya descargado
-                                    adaptador.notifyDataSetChanged();
-                                }
-                            });
-                            // Establece la imagen del artículo desde Firebase Storage
-                            articulo.setImagen(idArticulo);
-                            listaArticulos.add(articulo);
+            articuloRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    Articulo articulo = documentSnapshot.toObject(Articulo.class);
+                    if (articulo != null) {
+                        // Establece el callback para notificar cuando la imagen se descargue
+                        articulo.setImageDownloadCallback(() -> {
+                            // Notifica al adaptador cuando la imagen se haya descargado
+                            adaptador.notifyDataSetChanged();
+                        });
+                        // Establece la imagen del artículo desde Firebase Storage
+                        articulo.setImagen(idArticulo);
+                        listaArticulos.add(articulo);
 
-                            // Verifica si se han cargado todos los artículos
-                            if (listaArticulos.size() == totalArticulos) {
-                                // Notifica al adaptador una vez que todos los artículos se han agregado
-                                adaptador.notifyDataSetChanged();
-                            }
+                        // Verifica si se han cargado todos los artículos
+                        if (listaArticulos.size() == totalArticulos) {
+                            // Notifica al adaptador una vez que todos los artículos se han agregado
+                            adaptador.notifyDataSetChanged();
                         }
                     }
                 }
