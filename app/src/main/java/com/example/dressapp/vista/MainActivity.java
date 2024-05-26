@@ -60,15 +60,16 @@ public class MainActivity extends AppCompatActivity {
                     if (itemid == R.id.nav_posts) {
                         viewPager.setCurrentItem(0);
                         return true;
-                    } else if (itemid == R.id.nav_profile) {
-                        viewPager.setCurrentItem(1);
-                        return true;
                     } else if (itemid == R.id.nav_create) {
-                        viewPager.setCurrentItem(2);
+                        Intent intent = new Intent(MainActivity.this, CrearPublicacionActivity.class);
+                        startActivity(intent);
                         return true;
                     } else if (itemid == R.id.nav_wardrobe) {
-                    viewPager.setCurrentItem(3);
-                    return true;
+                        viewPager.setCurrentItem(1);
+                        return true;
+                    } else if (itemid == R.id.nav_profile) {
+                        viewPager.setCurrentItem(2);
+                        return true;
                     }
 
                     return false;

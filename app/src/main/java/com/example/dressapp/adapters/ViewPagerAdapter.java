@@ -9,7 +9,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.dressapp.ArmarioFragment;
 
 
-import com.example.dressapp.CrearPublicacionFragment;
 import com.example.dressapp.ProfileFragment;
 import com.example.dressapp.PublicacionesFragment;
 
@@ -27,11 +26,9 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
             case 0:
                 return new PublicacionesFragment();
             case 1:
-                return new CrearPublicacionFragment();
+                return new ArmarioFragment();
             case 2:
                 return new ProfileFragment();
-            case 3:
-                return new ArmarioFragment();
             default:
                 return null;
         }
@@ -39,6 +36,6 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 4; // número de fragments en el ViewPager2
+        return 3; // número de fragments en el ViewPager2
     }
 }

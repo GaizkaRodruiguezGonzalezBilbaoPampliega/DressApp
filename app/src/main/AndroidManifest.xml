@@ -20,7 +20,15 @@
         android:theme="@style/Theme.DressApp"
         tools:targetApi="31">
         <activity
+            android:name=".vista.EditProfileActivity"
+            android:exported="true">
+        </activity>
+        <activity
             android:name=".vista.UserProfileActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".vista.CrearPublicacionActivity"
             android:exported="true">
         </activity>
         <activity

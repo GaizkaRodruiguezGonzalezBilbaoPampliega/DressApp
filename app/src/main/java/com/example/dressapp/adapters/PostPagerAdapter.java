@@ -13,14 +13,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.dressapp.ComentariosActivity;
+import com.example.dressapp.ProfileFragment;
 import com.example.dressapp.R;
 import com.example.dressapp.entidades.Articulo;
 import com.example.dressapp.entidades.Publicacion;
+import com.example.dressapp.vista.UserProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -77,14 +80,20 @@ public class PostPagerAdapter extends PagerAdapter {
         likeButton.setOnClickListener(v -> handleLikeButtonClick(publicacion.getId(), likeButton));
         commentButton.setOnClickListener(v -> handleCommentButtonClick(publicacion.getId()));
         articlesButton.setOnClickListener(v -> handleArticlesButtonClick(articulosContainer, recyclerViewArticulos, publicacion.getListaArticulos()));
-
+        username.setOnClickListener(v -> handleUsernameClick(publicacion.getAutor().getId()));
         container.addView(view);
         return view;
     }
 
+
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         container.removeView((View) object);
+    }
+    private void handleUsernameClick(String id) {
+        Intent intent = new Intent(context, UserProfileActivity.class);
+        intent.putExtra("id", id);
+        context.startActivity(intent);
     }
 
     private void handleLikeButtonClick(String postId, ImageView likeButton) {
@@ -192,5 +201,7 @@ public class PostPagerAdapter extends PagerAdapter {
             Toast.makeText(context, "La lista de IDs de artículos es nula", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
 }

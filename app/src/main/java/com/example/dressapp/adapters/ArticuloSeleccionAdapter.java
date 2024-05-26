@@ -1,5 +1,6 @@
 package com.example.dressapp.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ public class ArticuloSeleccionAdapter extends RecyclerView.Adapter<ArticuloSelec
         this.articulosSeleccionados = articulosSeleccionados;
     }
 
+
     @NonNull
     @Override
     public ArticuloViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -36,7 +38,9 @@ public class ArticuloSeleccionAdapter extends RecyclerView.Adapter<ArticuloSelec
     public void onBindViewHolder(@NonNull ArticuloViewHolder holder, int position) {
         Articulo articulo = listaArticulos.get(position);
         holder.bind(articulo);
+        Log.d("ArticuloSeleccionAdapter", "Artículo seleccionado: " + articulosSeleccionados.contains(articulo));
     }
+
 
     @Override
     public int getItemCount() {
@@ -66,12 +70,16 @@ public class ArticuloSeleccionAdapter extends RecyclerView.Adapter<ArticuloSelec
                     if (isChecked) {
                         // Add the selected article to the list
                         articulosSeleccionados.add(articulo);
+                        Log.d("ArticuloSeleccionAdapter", "Artículo seleccionado: " + articulo.getNombre());
                     } else {
                         // Remove the article from the list
                         articulosSeleccionados.remove(articulo);
                     }
+                    // Notify adapter of changes
+                    notifyDataSetChanged();
                 }
             });
+
         }
     }
 

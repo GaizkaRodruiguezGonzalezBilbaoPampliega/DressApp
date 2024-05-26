@@ -1,10 +1,13 @@
-package com.example.dressapp;
+package com.example.dressapp.vista;
+
+import static android.app.PendingIntent.getActivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,16 +17,15 @@ import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.dressapp.R;
 import com.example.dressapp.adapters.ArticuloSeleccionAdapter;
 import com.example.dressapp.entidades.Articulo;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -42,7 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CrearPublicacionFragment extends Fragment {
+public class CrearPublicacionActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -64,42 +66,39 @@ public class CrearPublicacionFragment extends Fragment {
     private FirebaseFirestore db;
     private FirebaseStorage storage;
 
-    public CrearPublicacionFragment() {
-        // Required empty public constructor
-    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.activity_crear_publicacion, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_crear_publicacion);
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
 
-        initUI(view);
+        initUI();
         initListeners();
         cargarDatos();
-
-        return view;
     }
 
-    private void initUI(View view) {
-        editTextContenido = view.findViewById(R.id.editTextContenido);
-        imageViewPublicacion = view.findViewById(R.id.imageViewPublicacion);
-        btnCrearPublicacion = view.findViewById(R.id.btnCrearPublicacion);
-        searchViewArticulos = view.findViewById(R.id.searchViewArticulos);
-        recyclerViewArticulos = view.findViewById(R.id.recyclerViewArticulos);
+    private void initUI() {
+        editTextContenido = findViewById(R.id.editTextContenido);
+        imageViewPublicacion = findViewById(R.id.imageViewPublicacion);
+        btnCrearPublicacion = findViewById(R.id.btnCrearPublicacion);
+        searchViewArticulos = findViewById(R.id.searchViewArticulos);
+        recyclerViewArticulos = findViewById(R.id.recyclerViewArticulos);
 
         listaArticulos = new ArrayList<>();
         articulosSeleccionados = new ArrayList<>();
+
         adaptador = new ArticuloSeleccionAdapter(listaArticulos, articulosSeleccionados);
 
-        recyclerViewArticulos.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        recyclerViewArticulos.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewArticulos.setAdapter(adaptador);
     }
+
 
     private void initListeners() {
         imageViewPublicacion.setOnClickListener(v -> seleccionarImagen());
@@ -177,12 +176,12 @@ public class CrearPublicacionFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == getActivity().RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imagenUri = data.getData();
             try {
-                Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imagenUri);
+                Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagenUri);
                 imagenPublicacion = redimensionarBitmap(originalBitmap, 400, 600);
                 imageViewPublicacion.setImageBitmap(imagenPublicacion);
             } catch (IOException e) {
@@ -203,25 +202,30 @@ public class CrearPublicacionFragment extends Fragment {
             return;
         }
         if (imagenUri == null) {
-            Toast.makeText(getActivity(), "Debes seleccionar una imagen para la publicación", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Debes seleccionar una imagen para la publicación", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (articulosSeleccionados.isEmpty()) {
-            Toast.makeText(getActivity(), "Debes seleccionar al menos un artículo para la publicación", Toast.LENGTH_SHORT).show();
+        if (adaptador.getArticulosSeleccionados().isEmpty()) {
+            Toast.makeText(this, "Debes seleccionar al menos un artículo para la publicación", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (imagenUri != null) {
             try {
-                Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imagenUri);
+                Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imagenUri);
                 imagenPublicacion = redimensionarBitmap(originalBitmap, 400, 600);
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(getActivity(), "Error al redimensionar la imagen", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Error al redimensionar la imagen", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
 
+        List<String> idsArticulosSeleccionados = new ArrayList<>();
+        for (Articulo articulo : adaptador.getArticulosSeleccionados()) {
+            Log.d("Articulo seleccionado", articulo.getId());
+            idsArticulosSeleccionados.add(articulo.getId());
+        }
 
         // Crear un mapa de los campos de la publicación
         Map<String, Object> publicacionMap = new HashMap<>();
@@ -230,8 +234,9 @@ public class CrearPublicacionFragment extends Fragment {
         publicacionMap.put("fecha", new Date());
         publicacionMap.put("nLikes", 0);
         publicacionMap.put("nComentarios", 0);
+        publicacionMap.put("articulos", idsArticulosSeleccionados);
 
-        // Guardar la publicación en Firestore para obtener su IDa
+        // Guardar la publicación en Firestore para obtener su ID
         db.collection("publicaciones").add(publicacionMap)
                 .addOnSuccessListener(documentReference -> {
                     String idPublicacion = documentReference.getId();
@@ -242,22 +247,23 @@ public class CrearPublicacionFragment extends Fragment {
                         imagenPublicacion.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         byte[] data = baos.toByteArray();
                         UploadTask uploadTask = storageRef.putBytes(data);
-                        uploadTask.addOnFailureListener(exception -> Toast.makeText(getActivity(), "Error al subir la imagen", Toast.LENGTH_SHORT).show())
+                        uploadTask.addOnFailureListener(exception -> Toast.makeText(this, "Error al subir la imagen", Toast.LENGTH_SHORT).show())
                                 .addOnSuccessListener(taskSnapshot -> {
                                     // Imagen subida exitosamente
-                                    Toast.makeText(getActivity(), "Publicación creada exitosamente", Toast.LENGTH_SHORT).show();
-                                    getActivity().finish();
+                                    Toast.makeText(this, "Publicación creada exitosamente", Toast.LENGTH_SHORT).show();
+                                    this.finish();
                                 });
                     } else {
                         // No hay imagen para subir
-                        Toast.makeText(getActivity(), "No se ha seleccionado ninguna imagen para la publicación", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "No se ha seleccionado ninguna imagen para la publicación", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addOnFailureListener(e -> Toast.makeText(getActivity(), "Error al crear la publicación", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Error al crear la publicación", Toast.LENGTH_SHORT).show());
     }
 
+
     private void mostrarMensaje(String mensaje) {
-        Toast.makeText(getActivity(), mensaje, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
     }
 }
 
