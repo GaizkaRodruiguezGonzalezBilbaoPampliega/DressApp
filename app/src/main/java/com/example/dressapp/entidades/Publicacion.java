@@ -7,10 +7,12 @@ import com.example.dressapp.manager.ImageDownloadCallback;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class Publicacion {
+public class Publicacion implements Serializable {
     private String id; // Se mantiene el identificador
     private Usuario autor;
     private Bitmap imagen;
@@ -39,7 +41,7 @@ public class Publicacion {
     public Usuario getAutor() { return autor; }
     public void setAutor(Usuario autor) { this.autor = autor; }
 
-    public Bitmap getImagen() { return imagen; }
+    public Bitmap getImagen() { return imagen;}
 
     // Método para establecer la imagen de la publicación descargada desde Firebase Storage
     public void setImagen(final String idPublicacion) {

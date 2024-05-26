@@ -3,7 +3,6 @@ package com.example.dressapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -16,38 +15,28 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import com.bumptech.glide.Glide;
 import com.example.dressapp.entidades.Publicacion;
-import com.example.dressapp.manager.ImageDownloadCallback;
 import com.example.dressapp.vista.EditProfileActivity;
 import com.example.dressapp.vista.LoginActivity;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
-
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public class ProfileFragment extends Fragment {
-
     private static final int PICK_IMAGE_REQUEST = 1;
-
     private ImageView fotoPerfil;
     private TextView nombreUsuario;
     private TextView nombreCompleto;
@@ -57,7 +46,6 @@ public class ProfileFragment extends Fragment {
     private TextView nSeguidos;
     private Button btnPublicaciones, btnFavoritos, btnEditarPerfil, btnSeguir;
     private GridLayout galeriaPublicaciones;
-
     private FirebaseFirestore db;
     private FirebaseStorage storage;
     private FirebaseAuth auth;
@@ -148,7 +136,7 @@ public class ProfileFragment extends Fragment {
     private void obtenerCantidadSeguidores(String uid) {
         db.collection("seguidores").whereEqualTo("idSeguido", uid).get().addOnSuccessListener(queryDocumentSnapshots -> {
             int cantidadSeguidores = queryDocumentSnapshots.size();
-            nSeguidores.setText(String.valueOf(cantidadSeguidores) + " seguidores");
+            nSeguidores.setText(cantidadSeguidores + " seguidores");
         }).addOnFailureListener(e ->
                 Toast.makeText(getActivity(), "Error al obtener la cantidad de seguidores", Toast.LENGTH_SHORT).show());
     }
@@ -156,7 +144,7 @@ public class ProfileFragment extends Fragment {
     private void mostrarCantidadSeguidos(String uid) {
         db.collection("seguidores").whereEqualTo("idSeguidor", uid).get().addOnSuccessListener(queryDocumentSnapshots -> {
             int cantidadSeguidos = queryDocumentSnapshots.size();
-            nSeguidos.setText(String.valueOf(cantidadSeguidos) + " seguidos");
+            nSeguidos.setText(cantidadSeguidos + " seguidos");
         }).addOnFailureListener(e ->
                 Toast.makeText(getActivity(), "Error al obtener la cantidad de seguidos", Toast.LENGTH_SHORT).show());
     }

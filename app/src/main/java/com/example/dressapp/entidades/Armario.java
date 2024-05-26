@@ -1,10 +1,11 @@
 package com.example.dressapp.entidades;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Armario {
+public class Armario implements Serializable {
     private String idUsuario;
     private List<String> idArticulos;
 

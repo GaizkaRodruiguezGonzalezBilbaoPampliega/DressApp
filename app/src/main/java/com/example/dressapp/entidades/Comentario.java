@@ -1,8 +1,9 @@
 package com.example.dressapp.entidades;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Comentario {
+public class Comentario implements Serializable {
     private String id;
     private Usuario autor;
     private String contenido;

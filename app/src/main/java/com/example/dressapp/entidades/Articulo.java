@@ -8,7 +8,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class Articulo {
+import java.io.Serializable;
+
+public class Articulo implements Serializable {
     private String id;
     private String nombre;
     private Bitmap imagen;
@@ -61,10 +63,8 @@ public class Articulo {
     }
 
     public void setImagenBitmap(Bitmap imagen) { this.imagen = imagen; }
-
     public double getPrecio() { return precio; }
     public void setPrecio(double precio) { this.precio = precio; }
-
     public String getColor() { return color; }
     public void setColor(String color) { this.color = color; }
 

@@ -177,6 +177,7 @@ public class PostPagerAdapter extends PagerAdapter {
 
     private void handleArticlesButtonClick(LinearLayout articulosContainer, RecyclerView recyclerViewArticulos, List<String> listaArticulosIds) {
         if (listaArticulosIds != null) {
+            final int totalArticulos = listaArticulosIds.size();
             if (articulosContainer.getVisibility() == View.GONE) {
                 articulosContainer.setVisibility(View.VISIBLE);
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -186,10 +187,24 @@ public class PostPagerAdapter extends PagerAdapter {
                             .addOnSuccessListener(documentSnapshot -> {
                                 Articulo articulo = documentSnapshot.toObject(Articulo.class);
                                 if (articulo != null) {
-                                    articulos.add(articulo);
+                                    // Establece la imagen del artículo desde Firebase Storageç
                                     ArticuloAdapter articuloAdapter = new ArticuloAdapter(articulos);
                                     recyclerViewArticulos.setLayoutManager(new LinearLayoutManager(context));
                                     recyclerViewArticulos.setAdapter(articuloAdapter);
+                                    articulo.setImageDownloadCallback(() -> {
+                                        // Notifica al adaptador cuando la imagen se haya descargado
+                                        articuloAdapter.notifyDataSetChanged();
+                                    });
+                                    articulo.setImagen(articuloId);
+
+                                    // Establece la imagen del artículo desde Firebase Storage
+                                    articulos.add(articulo);
+
+                                    // Verifica si se han cargado todos los artículos
+                                    if (articulos.size() == totalArticulos) {
+                                        // Notifica al adaptador una vez que todos los artículos se han agregado
+                                        articuloAdapter.notifyDataSetChanged();
+                                    }
                                 }
                             })
                             .addOnFailureListener(e -> Toast.makeText(context, "Error al cargar artículos", Toast.LENGTH_SHORT).show());
