@@ -159,6 +159,8 @@ public class CrearPublicacionActivity extends AppCompatActivity {
                         listaArticulos.clear();
                         for (DocumentSnapshot document : task.getResult()) {
                             Articulo articulo = document.toObject(Articulo.class);
+                            articulo.setId(document.getId());
+                            articulo.setImagen(document.getId());
                             listaArticulos.add(articulo);
                         }
                         adaptador.notifyDataSetChanged();
@@ -223,7 +225,7 @@ public class CrearPublicacionActivity extends AppCompatActivity {
 
         List<String> idsArticulosSeleccionados = new ArrayList<>();
         for (Articulo articulo : adaptador.getArticulosSeleccionados()) {
-            Log.d("Articulo seleccionado", articulo.getId());
+
             idsArticulosSeleccionados.add(articulo.getId());
         }
 
@@ -234,6 +236,7 @@ public class CrearPublicacionActivity extends AppCompatActivity {
         publicacionMap.put("fecha", new Date());
         publicacionMap.put("nLikes", 0);
         publicacionMap.put("nComentarios", 0);
+        Log.d("idsArticulosSeleccionados", idsArticulosSeleccionados.toString());
         publicacionMap.put("articulos", idsArticulosSeleccionados);
 
         // Guardar la publicación en Firestore para obtener su ID
