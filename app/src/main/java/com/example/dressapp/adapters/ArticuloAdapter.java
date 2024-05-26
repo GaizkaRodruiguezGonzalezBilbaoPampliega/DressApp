@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,21 +15,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.dressapp.R;
 import com.example.dressapp.entidades.Articulo;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
 public class ArticuloAdapter extends RecyclerView.Adapter<ArticuloAdapter.ArticuloViewHolder> {
-    static FirebaseAuth mAuth ;
-
 
     private List<Articulo> listaArticulos;
+    private boolean mostrarBotonEliminar;
+    private OnArticuloListener onArticuloListener;
 
-    public ArticuloAdapter(List<Articulo> listaArticulos) {
+    public ArticuloAdapter(List<Articulo> listaArticulos, boolean mostrarBotonEliminar, OnArticuloListener onArticuloListener) {
         this.listaArticulos = listaArticulos;
+        this.mostrarBotonEliminar = mostrarBotonEliminar;
+        this.onArticuloListener = onArticuloListener;
     }
 
     @NonNull
@@ -36,7 +35,7 @@ public class ArticuloAdapter extends RecyclerView.Adapter<ArticuloAdapter.Articu
     public ArticuloViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_articulo, parent, false);
-        return new ArticuloViewHolder(itemView);
+        return new ArticuloViewHolder(itemView, mostrarBotonEliminar, onArticuloListener);
     }
 
     @Override
@@ -58,8 +57,11 @@ public class ArticuloAdapter extends RecyclerView.Adapter<ArticuloAdapter.Articu
         private TextView txtColorArticulo;
         private TextView txtReferenciaProducto;
         private TextView txtLinkArticulo;
+        private Button btnEliminar;
+        private boolean mostrarBotonEliminar;
+        private OnArticuloListener onArticuloListener;
 
-        public ArticuloViewHolder(@NonNull View itemView) {
+        public ArticuloViewHolder(@NonNull View itemView, boolean mostrarBotonEliminar, OnArticuloListener onArticuloListener) {
             super(itemView);
             imagenArticulo = itemView.findViewById(R.id.imagenArticulo);
             txtNombreArticulo = itemView.findViewById(R.id.txtNombreArticulo);
@@ -67,18 +69,22 @@ public class ArticuloAdapter extends RecyclerView.Adapter<ArticuloAdapter.Articu
             txtColorArticulo = itemView.findViewById(R.id.txtColorArticulo);
             txtReferenciaProducto = itemView.findViewById(R.id.txtReferenciaProducto);
             txtLinkArticulo = itemView.findViewById(R.id.txtLinkArticulo);
+            btnEliminar = itemView.findViewById(R.id.btnEliminar);
+            this.mostrarBotonEliminar = mostrarBotonEliminar;
+            this.onArticuloListener = onArticuloListener;
         }
 
         public void bind(Articulo articulo) {
-            // Cargar la imagen del artículo utilizando Glid
-
-
+            // Cargar la imagen del artículo utilizando Glide
             Glide.with(itemView.getContext()).load(articulo.getImagen()).into(imagenArticulo);
             txtNombreArticulo.setText(articulo.getNombre());
             txtPrecioArticulo.setText(String.valueOf(articulo.getPrecio()));
             txtColorArticulo.setText(articulo.getColor());
             txtReferenciaProducto.setText(articulo.getProductoRef());
             txtLinkArticulo.setText(articulo.getLink());
+
+            // Mostrar u ocultar el botón de eliminar según corresponda
+            btnEliminar.setVisibility(mostrarBotonEliminar ? View.VISIBLE : View.GONE);
 
             // Configurar el clic en el card para abrir el enlace del artículo
             itemView.setOnClickListener(v -> {
@@ -88,7 +94,17 @@ public class ArticuloAdapter extends RecyclerView.Adapter<ArticuloAdapter.Articu
                 intent.setData(Uri.parse(url));
                 itemView.getContext().startActivity(intent);
             });
-        }
 
+            // Configurar el clic en el botón de eliminar
+            btnEliminar.setOnClickListener(v -> {
+                if (onArticuloListener != null) {
+                    onArticuloListener.onEliminarClick(getAdapterPosition());
+                }
+            });
+        }
+    }
+
+    public interface OnArticuloListener {
+        void onEliminarClick(int position);
     }
 }

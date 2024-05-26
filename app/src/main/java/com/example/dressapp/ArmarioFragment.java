@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,11 +24,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Transaction;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArmarioFragment extends Fragment {
+public class ArmarioFragment extends Fragment implements ArticuloAdapter.OnArticuloListener {
 
     private List<Articulo> listaArticulos;
     private ArticuloAdapter adaptador;
@@ -55,7 +59,7 @@ public class ArmarioFragment extends Fragment {
 
         // Inicializa la lista de artículos y el adaptador
         listaArticulos = new ArrayList<>();
-        adaptador = new ArticuloAdapter( listaArticulos);
+        adaptador = new ArticuloAdapter(listaArticulos, true, this);
 
         // Configura el RecyclerView
         RecyclerView recyclerView = view.findViewById(R.id.recyclerViewArticulos);
@@ -64,7 +68,6 @@ public class ArmarioFragment extends Fragment {
 
         // Configura el botón de agregar artículo
         Button btnAgregarArticulo = view.findViewById(R.id.btnAgregarArticulo);
-
         btnAgregarArticulo.setOnClickListener(v -> {
             // Intent para abrir la actividad CrearArticuloActivity
             Intent intent = new Intent(getActivity(), CrearArticuloActivity.class);
@@ -122,5 +125,32 @@ public class ArmarioFragment extends Fragment {
                 }
             });
         }
+    }
+
+    @Override
+    public void onEliminarClick(int position) {
+        Articulo articuloAEliminar = listaArticulos.get(position);
+        String idArticulo = articuloAEliminar.getId();
+
+        db.runTransaction((Transaction.Function<Void>) transaction -> {
+            DocumentReference articuloRef = db.collection("articulos").document(idArticulo);
+            DocumentReference armarioRef = db.collection("armarios").document(currentUser.getUid());
+
+            // Eliminar el artículo de la colección "articulos"
+            transaction.delete(articuloRef);
+
+            // Eliminar el ID del artículo del array de artículos en el armario del usuario
+            transaction.update(armarioRef, "articulos", FieldValue.arrayRemove(idArticulo));
+
+            return null;
+        }).addOnSuccessListener(aVoid -> {
+            listaArticulos.remove(position);
+            adaptador.notifyItemRemoved(position);
+            // Toast para confirmar la eliminación
+            Toast.makeText(getContext(), "Artículo eliminado", Toast.LENGTH_SHORT).show();
+        }).addOnFailureListener(e -> {
+            // Toast para indicar error en la eliminación
+            Toast.makeText(getContext(), "Error al eliminar el artículo", Toast.LENGTH_SHORT).show();
+        });
     }
 }

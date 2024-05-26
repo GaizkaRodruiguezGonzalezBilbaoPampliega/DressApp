@@ -1,10 +1,10 @@
-<!-- item_articulo.xml -->
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="8dp">
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,20 +16,17 @@
         <ImageView
             android:id="@+id/imagenArticulo"
             android:layout_width="0dp"
-            android:layout_height="100dp"
+            android:layout_height="120dp"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/article_picture_placeholder" />
+            android:src="@drawable/article_picture_placeholder"
+            android:layout_marginEnd="16dp"/>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingStart="16dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="8dp">
+            android:layout_weight="2"
+            android:orientation="vertical">
 
             <!-- Nombre del artículo -->
             <TextView
@@ -39,7 +36,8 @@
                 android:text="Nombre del Artículo"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="4dp"/>
+                android:layout_marginBottom="4dp"
+                android:textColor="@android:color/black"/>
 
             <!-- Precio del artículo -->
             <TextView
@@ -48,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:text="Precio: $0"
                 android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@android:color/holo_green_dark"
                 android:layout_marginBottom="4dp"/>
 
             <!-- Color del artículo -->
@@ -78,8 +76,19 @@
                 android:layout_height="wrap_content"
                 android:text="Link: www.example.com"
                 android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
-                android:layout_marginBottom="4dp"/>
+                android:textColor="@android:color/holo_blue_dark"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Botón de eliminar -->
+            <Button
+                android:id="@+id/btnEliminar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Eliminar"
+                android:visibility="gone"
+                android:backgroundTint="@android:color/holo_red_dark"
+                android:textColor="@android:color/white"
+                android:padding="8dp"/>
 
         </LinearLayout>
 

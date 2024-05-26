@@ -13,13 +13,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.dressapp.ComentariosActivity;
-import com.example.dressapp.ProfileFragment;
 import com.example.dressapp.R;
 import com.example.dressapp.entidades.Articulo;
 import com.example.dressapp.entidades.Publicacion;
@@ -85,11 +83,11 @@ public class PostPagerAdapter extends PagerAdapter {
         return view;
     }
 
-
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         container.removeView((View) object);
     }
+
     private void handleUsernameClick(String id) {
         Intent intent = new Intent(context, UserProfileActivity.class);
         intent.putExtra("id", id);
@@ -177,34 +175,28 @@ public class PostPagerAdapter extends PagerAdapter {
 
     private void handleArticlesButtonClick(LinearLayout articulosContainer, RecyclerView recyclerViewArticulos, List<String> listaArticulosIds) {
         if (listaArticulosIds != null) {
-            final int totalArticulos = listaArticulosIds.size();
             if (articulosContainer.getVisibility() == View.GONE) {
                 articulosContainer.setVisibility(View.VISIBLE);
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 List<Articulo> articulos = new ArrayList<>();
+                ArticuloAdapter articuloAdapter = new ArticuloAdapter(articulos, false, null);
+                recyclerViewArticulos.setLayoutManager(new LinearLayoutManager(context));
+                recyclerViewArticulos.setAdapter(articuloAdapter);
+
                 for (String articuloId : listaArticulosIds) {
                     db.collection("articulos").document(articuloId).get()
                             .addOnSuccessListener(documentSnapshot -> {
                                 Articulo articulo = documentSnapshot.toObject(Articulo.class);
                                 if (articulo != null) {
-                                    // Establece la imagen del artículo desde Firebase Storageç
-                                    ArticuloAdapter articuloAdapter = new ArticuloAdapter(articulos);
-                                    recyclerViewArticulos.setLayoutManager(new LinearLayoutManager(context));
-                                    recyclerViewArticulos.setAdapter(articuloAdapter);
+                                    // Establece la imagen del artículo desde Firebase Storage
                                     articulo.setImageDownloadCallback(() -> {
                                         // Notifica al adaptador cuando la imagen se haya descargado
                                         articuloAdapter.notifyDataSetChanged();
                                     });
                                     articulo.setImagen(articuloId);
 
-                                    // Establece la imagen del artículo desde Firebase Storage
                                     articulos.add(articulo);
-
-                                    // Verifica si se han cargado todos los artículos
-                                    if (articulos.size() == totalArticulos) {
-                                        // Notifica al adaptador una vez que todos los artículos se han agregado
-                                        articuloAdapter.notifyDataSetChanged();
-                                    }
+                                    articuloAdapter.notifyDataSetChanged();
                                 }
                             })
                             .addOnFailureListener(e -> Toast.makeText(context, "Error al cargar artículos", Toast.LENGTH_SHORT).show());
@@ -216,7 +208,4 @@ public class PostPagerAdapter extends PagerAdapter {
             Toast.makeText(context, "La lista de IDs de artículos es nula", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
 }
